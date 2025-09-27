@@ -47,6 +47,14 @@
         .current-price {
             font-weight: bold;
         }
+        .submenu {
+    margin-top: 8px;
+    margin-left: 20px;
+}
+.submenu.hidden {
+    display: none;
+}
+
     </style>
     <!-- Product -->
     <div class="bg0 m-t-23 p-b-140" style="margin-top:80px">
@@ -56,12 +64,26 @@
                     <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1 filter-btn" data-filter="all">
                         Tất cả
                     </button>
-
                     @foreach ($menus as $menu)
-                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-btn"
-                            data-filter="{{ $menu->id }}">
-                            {{ $menu->name }}
-                        </button>
+                        <div class="menu-group" style="display:inline-block;">
+                            <!-- Nút danh mục cha -->
+                            <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 parent-btn"
+                                data-filter="{{ $menu->id }}">
+                                {{ $menu->name }}
+                            </button>
+
+                            <!-- Danh mục con, ẩn mặc định -->
+                            @if ($menu->children->count())
+                                <div class="submenu hidden" id="submenu-{{ $menu->id }}">
+                                    @foreach ($menu->children as $child)
+                                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-16 m-tb-5 filter-btn child-btn"
+                                            data-filter="{{ $child->id }}">
+                                            └ {{ $child->name }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     @endforeach
 
                     <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-btn" data-filter="sale">
@@ -145,26 +167,26 @@
                                 </li>
 
                                 <li class="p-b-6">
-                                    <a href="#" class="filter-link stext-106 trans-04" data-price="1-10">
-                                        1 VND - 10 VND
+                                    <a href="#" class="filter-link stext-106 trans-04" data-price="0-499000">
+                                        Dưới 500.000 VND
                                     </a>
                                 </li>
 
                                 <li class="p-b-6">
-                                    <a href="#" class="filter-link stext-106 trans-04" data-price="11-50">
-                                        11 VND - 50 VND
+                                    <a href="#" class="filter-link stext-106 trans-04" data-price="500000-999000">
+                                        500.000 - 999.000 VND
                                     </a>
                                 </li>
 
                                 <li class="p-b-6">
-                                    <a href="#" class="filter-link stext-106 trans-04" data-price="51-100">
-                                        51 VND - 100 VND
+                                    <a href="#" class="filter-link stext-106 trans-04" data-price="1000000-2999000">
+                                        1.000.000 - 2.999.000 VND
                                     </a>
                                 </li>
 
                                 <li class="p-b-6">
-                                    <a href="#" class="filter-link stext-106 trans-04" data-price="100+">
-                                        100 VND ++
+                                    <a href="#" class="filter-link stext-106 trans-04" data-price="3000000+">
+                                        Trên 3.000.000 VND
                                     </a>
                                 </li>
 
@@ -191,118 +213,19 @@
 
     <script src={{ asset('template/js/product.js?v=' . time()) }}></script>
 
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.querySelector('input[name="search-product"]');
-            const products = document.querySelectorAll('.product-item');
-
-            searchInput.addEventListener('keyup', function() {
-                let searchText = searchInput.value.toLowerCase().trim();
-
-                products.forEach(product => {
-                    let productName = product.querySelector('.js-name-b2').textContent
-                        .toLowerCase();
-
-                    if (productName.includes(searchText)) {
-                        product.style.display = 'block';
-                    } else {
-                        product.style.display = 'none';
-                    }
-                });
-            });
-        });
-    </script> --}}
-
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const productList = document.querySelector("#product-list");
-            const productItems = document.querySelectorAll(".product-item");
-
-            // Xử lý sự kiện click cho lọc giá
-            document.querySelectorAll("[data-price]").forEach((btn) => {
-                btn.addEventListener("click", function(e) {
-                    e.preventDefault();
-
-                    // Loại bỏ lớp active khỏi tất cả các nút lọc giá
-                    document.querySelectorAll("[data-price]").forEach((el) => el.classList.remove(
-                        "active-filter"));
-
-                    // Thêm lớp active cho nút được chọn
-                    this.classList.add("active-filter");
-
-                    let priceRange = this.getAttribute("data-price").split("-");
-                    let minPrice = priceRange[0] ? parseInt(priceRange[0]) : 0;
-                    let maxPrice = priceRange[1] ? parseInt(priceRange[1]) : Infinity;
-
-                    productItems.forEach((item) => {
-                        let productPrice = parseInt(item.getAttribute("data-price"));
-                        if (priceRange == "all" || (productPrice >= minPrice &&
-                                productPrice <= maxPrice)) {
-                            item.style.display = "block";
-                        } else {
-                            item.style.display = "none";
-                        }
-                    });
-                });
-            });
-
-            // Xử lý sự kiện click cho sắp xếp
-            document.querySelectorAll("[data-sort]").forEach((btn) => {
-                btn.addEventListener("click", function(e) {
-                    e.preventDefault();
-
-                    // Loại bỏ lớp active khỏi tất cả các nút sắp xếp
-                    document.querySelectorAll("[data-sort]").forEach((el) => el.classList.remove(
-                        "active-filter"));
-
-                    // Thêm lớp active cho nút được chọn
-                    this.classList.add("active-filter");
-
-                    let sortType = this.getAttribute("data-sort");
-                    let sortedItems = Array.from(productItems);
-
-                    if (sortType === "newest") {
-                        sortedItems.sort((a, b) => {
-                            return new Date(b.getAttribute("data-date")) - new Date(a
-                                .getAttribute("data-date"));
-                        });
-                    } else if (sortType === "price-low") {
-                        sortedItems.sort((a, b) => {
-                            return parseInt(a.getAttribute("data-price")) - parseInt(b
-                                .getAttribute("data-price"));
-                        });
-                    } else if (sortType === "price-high") {
-                        sortedItems.sort((a, b) => {
-                            return parseInt(b.getAttribute("data-price")) - parseInt(a
-                                .getAttribute("data-price"));
-                        });
-                    }
-
-                    // Cập nhật lại danh sách sản phẩm
-                    productList.innerHTML = "";
-                    sortedItems.forEach((item) => {
-                        productList.appendChild(item);
-                    });
-                });
-            });
-        });
-    </script> --}}
-
-
-
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
             const filterButtons = document.querySelectorAll(".filter-tope-group button");
             const searchInput = document.querySelector("#search-input");
             const sortFilters = document.querySelectorAll("[data-sort]");
-            const priceFilters = document.querySelectorAll("[data-price]"); 
+            const priceFilters = document.querySelectorAll("[data-price]");
 
             function fetchProducts() {
                 let menuId = document.querySelector(".filter-tope-group .how-active1")?.getAttribute(
                     "data-filter") || "all";
                 let filter = document.querySelector(".filter-active")?.getAttribute("data-sort") || "";
                 let priceRange = document.querySelector(".price-active")?.getAttribute("data-price") ||
-                "all"; // Lấy giá trị lọc theo giá
+                    "all"; // Lấy giá trị lọc theo giá
                 let search = searchInput.value.trim();
 
                 $.ajax({
@@ -368,5 +291,31 @@
                 fetchProducts();
             });
         });
+    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const parentButtons = document.querySelectorAll(".parent-btn");
+
+    parentButtons.forEach(btn => {
+        btn.addEventListener("click", function(e) {
+            e.preventDefault();
+
+            // Tìm submenu của cha này
+            const submenu = document.querySelector("#submenu-" + this.dataset.filter);
+
+            // Ẩn các submenu khác
+            document.querySelectorAll(".submenu").forEach(sm => {
+                if (sm !== submenu) sm.classList.add("hidden");
+            });
+
+            // Toggle submenu hiện tại
+            if (submenu) submenu.classList.toggle("hidden");
+
+            // Vẫn gọi filter product như cũ
+            fetchProducts();
+        });
+    });
+});
+
     </script>
 @endsection

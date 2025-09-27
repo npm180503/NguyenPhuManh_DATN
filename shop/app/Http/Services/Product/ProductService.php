@@ -42,6 +42,7 @@ class ProductService
         if(!empty($conditions["name"])){
             $query->where("name", "LIKE", $conditions["name"]."%");
         }
+        $query->orderByDesc('created_at');
         return $query->paginate($limit, page:$page);
     }
 

@@ -29,6 +29,211 @@
             pointer-events: none;
             cursor: not-allowed;
         }
+
+        .product-gallery {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        /* Vùng chứa ảnh chính */
+        .main-wrapper {
+            flex: 1;
+            max-width: 500px;
+            /* giới hạn chiều rộng */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .slick-main {
+            width: 100%;
+        }
+
+        .slick-main img {
+            width: 100%;
+            height: auto;
+            /* giữ tỉ lệ thật */
+            max-height: 500px;
+            /* không vượt quá 500px */
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+
+
+
+        /* Nút trên ảnh chính */
+        .slick-prev-main,
+        .slick-next-main {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 50%;
+            z-index: 10;
+            color: #333;
+        }
+
+        .slick-prev-main {
+            left: 10px;
+        }
+
+        .slick-next-main {
+            right: 10px;
+        }
+
+        /* Thumbnail dọc */
+        .thumbs-wrapper-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 110px;
+            max-height: 500px;
+            /* chiều cao cố định bằng ảnh chính */
+        }
+
+        .slick-thumbs-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slick-thumbs-vertical div {
+            margin: 5px 0;
+        }
+
+        .slick-thumbs-vertical img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        /* Highlight thumbnail */
+        .slick-thumbs-vertical div.slick-current img {
+            border: 3px solid #ff6600;
+            box-shadow: 0 0 10px #ff6600;
+            transform: scale(1.05);
+        }
+
+        /* Fade mờ phần cuối */
+        .thumbs-wrapper-vertical::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            /* mờ nửa ảnh thứ 5 */
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.7));
+            pointer-events: none;
+        }
+
+
+
+        /* Nút prev/next cho thumbnail */
+        .slick-prev-vertical,
+        .slick-next-vertical {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            padding: 5px;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .content-wrapper {
+            position: relative;
+            max-height: 100px;
+            /* ban đầu chỉ hiển thị 20px */
+            overflow: hidden;
+        }
+
+        .content-wrapper.expanded {
+            max-height: 1000px;
+            /* khi mở rộng */
+            transition: max-height 0.5s ease;
+        }
+
+        .content-text {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .show-more-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 70%);
+            cursor: pointer;
+            padding-top: 5px;
+        }
+
+        .show-more-overlay .btn-show-more {
+            color: #ff6600;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .show-more-overlay .arrow-down {
+            display: block;
+            margin: 2px auto 0;
+            font-size: 12px;
+            color: #ff6600;
+            animation: bounce 1s infinite;
+        }
+
+        /* Hiệu ứng mũi tên nhấp nháy */
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(3px);
+            }
+        }
+
+        .related-products {
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+
+        .related-products .related-img {
+            height: 200px;
+            /* chiều cao ảnh đồng bộ */
+            object-fit: cover;
+            /* cắt ảnh vừa khung, không méo */
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .related-products .related-img:hover {
+            transform: scale(1.05);
+        }
+
+        .related-products .card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
     </style>
     <div class="container" style="margin-top:100px">
         <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
@@ -77,19 +282,40 @@
             <div class="row">
                 <div class="col-md-6 col-lg-7 p-b-30">
                     <div class="p-l-25 p-r-30 p-lr-0-lg">
-                        <div class="wrap-slick-my flex-sb flex-w">
-                            <div class="slick3 gallery-lb">
-                                <div class="item-slick3" data-thumb="images/product-detail-01.jpg">
-
-                                    <div class="wrap-pic-w pos-relative">
-                                        <img src="{{ $product->thumb }}" alt="IMG-PRODUCT">
-
-                                        <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-                                            href="{{ $product->thumb }}">
-                                            <i class="fa fa-expand"></i>
-                                        </a>
+                        <div class="product-gallery d-flex">
+                            <!-- Thumbnail dọc bên trái -->
+                            <div class="thumbs-wrapper-vertical">
+                                <button type="button" class="slick-prev-vertical"><i class="fa fa-chevron-up"></i></button>
+                                <div class="slick-thumbs-vertical">
+                                    <div>
+                                        <img src="{{ asset($product->thumb) }}" alt="{{ $product->name }}">
                                     </div>
+                                    @foreach ($product->images as $img)
+                                        <div>
+                                            <img src="{{ asset($img->image_path) }}" alt="{{ $product->name }}">
+                                        </div>
+                                    @endforeach
                                 </div>
+                                <button type="button" class="slick-next-vertical"><i
+                                        class="fa fa-chevron-down"></i></button>
+                            </div>
+
+
+                            <!-- Ảnh chính -->
+                            <div class="main-wrapper">
+                                <div class="slick-main">
+                                    <div>
+                                        <img src="{{ asset($product->thumb) }}" alt="{{ $product->name }}">
+                                    </div>
+                                    @foreach ($product->images as $img)
+                                        <div>
+                                            <img src="{{ asset($img->image_path) }}" alt="{{ $product->name }}">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <!-- nút prev/next trên ảnh chính -->
+                                <button type="button" class="slick-prev-main"><i class="fa fa-chevron-left"></i></button>
+                                <button type="button" class="slick-next-main"><i class="fa fa-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -113,10 +339,6 @@
                                 <span class="current-price">{{ number_format($product->price, 0) }} VND</span>
                             @endif
                         </span>
-
-                        <p class="stext-102 cl3 p-t-23 js-description-detail">
-                            {!! $product->description !!}
-                        </p>
 
                         <!--  -->
                         <div class="p-t-33">
@@ -155,7 +377,7 @@
                                     </div>
 
                                     <button
-                                        class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail1"
+                                        class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
                                         data-id="{{ $product->id }}">
                                         Thêm vào giỏ hàng
                                     </button>
@@ -172,7 +394,11 @@
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item p-b-10">
-                            <a class="nav-link active" data-toggle="tab" href="#description" role="tab">Mô tả</a>
+                            <a class="nav-link active" data-toggle="tab" href="#content" role="tab">Mô tả</a>
+                        </li>
+
+                        <li class="nav-item p-b-10">
+                            <a class="nav-link" data-toggle="tab" href="#description" role="tab">Thông tin sản phẩm</a>
                         </li>
 
                         <li class="nav-item p-b-10">
@@ -184,14 +410,26 @@
                     <!-- Tab panes -->
                     <div class="tab-content p-t-43">
                         <!-- - -->
-                        <div class="tab-pane fade show active" id="description" role="tabpanel">
-                            <div class="how-pos2 p-lr-15-md">
-                                <p class="stext-102 cl6">
+                        <div class="tab-pane fade show active" id="content" role="tabpanel">
+                            <div class="how-pos2 p-lr-15-md content-wrapper">
+                                <p class="stext-102 cl6 content-text">
                                     {!! $product->content !!}
                                 </p>
+                                <div class="show-more-overlay">
+                                    <span class="btn-show-more">Xem thêm</span>
+                                    <i class="fa fa-chevron-down arrow-down"></i>
+                                </div>
                             </div>
                         </div>
 
+
+                        <div class="tab-pane fade" id="description" role="tabpanel">
+                            <div class="how-pos2 p-lr-15-md">
+                                <p class="stext-102 cl6">
+                                    {!! $product->description !!}
+                                </p>
+                            </div>
+                        </div>
                         <!-- - -->
                         <div class="tab-pane fade" id="reviews" role="tabpanel">
                             <div class="row">
@@ -220,6 +458,18 @@
                                                         <p class="stext-102 cl6">
                                                             {{ $review->comment }}
                                                         </p>
+
+                                                        @if ($review->images)
+                                                            <div class="review-images">
+                                                                @foreach ($review->images as $image)
+                                                                    <img src="{{ asset($image->path) }}"
+                                                                        alt="review image"
+                                                                        style="max-width: 120px; border-radius: 6px; margin-top: 5px;">
+                                                                @endforeach
+
+
+                                                            </div>
+                                                        @endif
 
                                                         <!-- Kiểm tra nếu có phản hồi từ admin -->
                                                         @if ($review->admin_reply)
@@ -268,7 +518,13 @@
                                                     <textarea class="size-110 bor8 stext-102 cl2 p-lr-20 p-tb-10" id="review" name="review"></textarea>
                                                 </div>
                                             </div>
-
+                                            <div class="row p-b-25">
+                                                <div class="col-12 p-b-5">
+                                                    <label class="stext-102 cl3">Ảnh</label>
+                                                    <input type="file" name="image" multiple accept="image/*"
+                                                        class="form-control">
+                                                </div>
+                                            </div>
                                             <button
                                                 class="flex-c-m stext-101 cl0 size-112 bg7 bor11 hov-btn3 p-lr-15 trans-04 m-b-10">
                                                 Gửi
@@ -300,61 +556,96 @@
             </span>
 
         </div>
+
+        <div class="related-products mt-5 container">
+            <h3 class="text-center mb-4">Sản phẩm liên quan</h3>
+            <div class="row">
+                @foreach ($relatedProducts as $product)
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <a href="{{ route('fr.product.detail', $product->id) }}">
+                                <img src="{{ asset($product->thumb) }}" class="card-img-top related-img"
+                                    alt="{{ $product->name }}">
+                            </a>
+                            <div class="card-body">
+                                <a href="{{ route('fr.product.detail', ['productID' => $product->id]) }} ">
+                                    {{ $product->name }}
+                                </a>
+
+                                @if ($product->price_sale && $product->price_sale < $product->price)
+                                    <p class="mb-0">
+                                        <span class="text-danger fw-bold">
+                                            {{ number_format($product->price_sale, 0, ',', '.') }} VND
+                                        </span>
+                                        <br>
+                                        <small class="text-muted" style="text-decoration: line-through;">
+                                            {{ number_format($product->price, 0, ',', '.') }} VND
+                                        </small>
+                                    </p>
+                                @else
+                                    <p class="text-danger fw-bold mb-0">
+                                        {{ number_format($product->price, 0, ',', '.') }} VND
+                                    </p>
+                                @endif
+
+
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+
+
     </section>
 
     <script>
-        $(document).ready(function() {
-            $('form').submit(function(e) {
-                e.preventDefault();
+        $('form').submit(function(e) {
+            e.preventDefault();
 
-                var isAuthenticated =
-                    {{ auth()->check() ? 'true' : 'false' }}; // Kiểm tra trạng thái đăng nhập
-
-                if (!isAuthenticated) {
-                    // Nếu chưa đăng nhập, hiển thị thông báo lỗi bằng SweetAlert
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Bạn chưa đăng nhập',
-                        text: 'Vui lòng đăng nhập để thực hiện đánh giá.',
-                        confirmButtonText: 'Đăng nhập',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Điều hướng đến trang đăng nhập nếu người dùng nhấn nút "Đăng nhập"
-                            window.location.href = "{{ route('fr.login') }}";
-                        }
-                    });
-                    return;
-                }
-
-                var rating = $('input[name="rating"]').val();
-                // Kiểm tra giá trị của rating
-                if (!rating || rating < 1 || rating > 5) {
-                    alert("Vui lòng chọn đánh giá hợp lệ (1-5 sao).");
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ route('fr.review.send') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đánh giá của bạn đã được gửi!',
-                            text: 'Cảm ơn bạn đã để lại đánh giá.',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    },
-
-                    error: function(xhr) {
-                        alert('Lỗi: ' + xhr.responseJSON.message);
+            var isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+            if (!isAuthenticated) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Bạn chưa đăng nhập',
+                    text: 'Vui lòng đăng nhập để thực hiện đánh giá.',
+                    confirmButtonText: 'Đăng nhập',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('fr.login') }}";
                     }
                 });
+                return;
+            }
+
+            var rating = $('input[name="rating"]').val();
+            if (!rating || rating < 1 || rating > 5) {
+                alert("Vui lòng chọn đánh giá hợp lệ (1-5 sao).");
+                return;
+            }
+
+            let formData = new FormData(this); // lấy toàn bộ form gồm cả file
+
+            $.ajax({
+                url: "{{ route('fr.review.send') }}",
+                method: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đánh giá của bạn đã được gửi!',
+                        text: 'Cảm ơn bạn đã để lại đánh giá.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    alert('Lỗi: ' + xhr.responseJSON.message);
+                }
             });
         });
     </script>
@@ -362,7 +653,7 @@
     <script src="{{ asset('js/public.js') }}"></script>
 
     <script src={{ asset('template/js/product.js?v=' . time()) }}></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sizeButtons = document.querySelectorAll('.size-button');
@@ -387,48 +678,48 @@
             });
         });
     </script>
-
-<script>
-    $(document).on("click", ".js-addcart-detail1", function(){
-    let productId = $(this).data("id");
-    let sizeId = $(".size-button.active").data("size-id");
-    let sizeName = $(".size-button.active").data("size");
-    let quantity = parseInt($("#quantity-product").val()) || 1;
-
-    console.log(quantity);
-
-    if (!sizeId) {
-        Swal.fire({
-            title: "Chưa chọn size!",
-            text: "Vui lòng chọn size trước khi thêm vào giỏ hàng.",
-            icon: "warning"
-        });
-        return;
-    }
-
-    $.ajax({
-        url: "/cart/add",
-        type: "POST",
-        data: {
-            id: productId,
-            size_id: sizeId,
-            size_name: sizeName,
-            quantity: quantity
-        },
-        success: function(response) {
-            Swal.fire({
-                title: "Thành công!",
-                text: "Sản phẩm đã được thêm vào giỏ hàng.",
-                icon: "success"
+    <script>
+        $(document).ready(function() {
+            // Slick cho ảnh chính
+            $('.slick-main').slick({
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: true,
+                prevArrow: $('.slick-prev-main'),
+                nextArrow: $('.slick-next-main'),
+                fade: true,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                asNavFor: '.slick-thumbs-vertical'
             });
-            // console.log(response);
-            $(".cart-content").html(response.cart_content);
-            // $(".icon-header-noti").attr("data-notify", response.total_items);
-        },
-        error: function(){
 
-        }
-    });
-});
-</script>
+            // Slick cho thumbnail dạng vòng tròn
+            $('.slick-thumbs-vertical').slick({
+                slidesToShow: 4, // hiển thị 4 thumbnail
+                slidesToScroll: 1,
+                vertical: true,
+                infinite: true, // vòng lặp
+                focusOnSelect: true,
+                arrows: true,
+                prevArrow: $('.slick-prev-vertical'),
+                nextArrow: $('.slick-next-vertical'),
+                asNavFor: '.slick-main'
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.show-more-overlay').on('click', function() {
+                var $wrapper = $(this).closest('.content-wrapper');
+                $wrapper.toggleClass('expanded');
+
+                // Ẩn overlay khi mở rộng
+                if ($wrapper.hasClass('expanded')) {
+                    $(this).fadeOut();
+                } else {
+                    $(this).fadeIn();
+                }
+            });
+        });
+    </script>
 @endsection

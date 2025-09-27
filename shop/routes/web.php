@@ -130,7 +130,7 @@ Route::prefix('contact')->group(function(){
     Route::post("send", [ContactController::class, "store"])->name("fr.contact.send");
 });
 
-Route::get("pay", [PayController::class, "index"])->name("fr.pay");
+Route::get('/momo/payment', [PayController::class, 'momo_payment'])->name('fr.momo.payment');
 
 Route::get("login", [LoginController::class, "index"])->name("fr.login");
 Route::post("login", [LoginController::class, "login"])->name("fr.post.login");
@@ -150,8 +150,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('fr.logout');
 // });
 Route::middleware(['auth:frontend'])->group(function () {
     Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
-    Route::get('cart/update/{itemId}/{action}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
     Route::prefix('/cart')->group(function(){
         Route::get("", [CartController::class, "cartDetail"])->name("cart.detail");

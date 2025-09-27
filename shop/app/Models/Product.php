@@ -16,8 +16,7 @@ class Product extends Model
         'price',
         'price_sale',
         'active',
-        'thumb',
-        'size'
+        'thumb'
     ];
     public function sizes()
     {
@@ -34,4 +33,9 @@ public function reviews(): HasMany
 {
     return $this->hasMany(Review::class, 'product_id');
 }
+public function images()
+{
+    return $this->hasMany(ProductImage::class);
+}
+
 }

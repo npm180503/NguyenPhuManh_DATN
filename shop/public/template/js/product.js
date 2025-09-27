@@ -1,3 +1,10 @@
+
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    }
+});
+
 jQuery(document).ready(function(){
     $("body").append("<div id='modal-popup'></div>");
     $(".js-show-modal1").click(function(){
@@ -35,46 +42,100 @@ jQuery(document).ready(function(){
     })
 });
 
-$(document).on("click", ".js-addcart-detail", function(){
-    let productId = $(this).data("id");
-    let sizeId = $(".size-button.active").data("size-id");
-    let sizeName = $(".size-button.active").data("size");
-    let quantity = $(".show-modal #quantity-product").val();
-    console.log(quantity);
+$(document).on("click", ".js-addcart-detail", function(e) {
+        e.preventDefault();
+        var productId = $(this).data("id");
+        var quantity = $("#quantity-product").val();
+        var selectedSize = $(".size-button.active").data("size-id");
 
-    if (!sizeId) {
-        Swal.fire({
-            title: "Chưa chọn size!",
-            text: "Vui lòng chọn size trước khi thêm vào giỏ hàng.",
-            icon: "warning"
-        });
-        return;
-    }
-
-    $.ajax({
-        url: "/cart/add",
-        type: "POST",
-        data: {
-            id: productId,
-            size_id: sizeId,
-            size_name: sizeName,
-            quantity: quantity
-        },
-        success: function(response) {
+        if (!selectedSize) {
             Swal.fire({
-                title: "Thành công!",
-                text: "Sản phẩm đã được thêm vào giỏ hàng.",
-                icon: "success"
+                icon: 'error',
+                title: 'Chưa chọn size',
+                text: 'Vui lòng chọn size trước khi thêm vào giỏ hàng'
             });
-            // console.log(response);
-            $(".cart-content").html(response.cart_content);
-            // $(".icon-header-noti").attr("data-notify", response.total_items);
-        },
-        error: function(){
-
+            return;
         }
+
+        $.ajax({
+            url: `/cart/add/${productId}` ,
+            method: "POST",
+            data: {
+                quantity: quantity,
+                size_id: selectedSize
+            },
+            success: function(response) {
+                // Load lại nội dung mini cart
+                // $.ajax({
+                //     url: "{{ route('cart.component') }}",
+                //     method: "GET",
+                //     success: function(html) {
+                //         $(".header-cart-content").html(html);
+                //         $(".js-show-cart").trigger("click");
+                //     }
+                // });
+                $(".cart-content").html(response.html);
+                // Nếu muốn thêm thông báo nhỏ
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: response.message ?? 'Đã thêm vào giỏ hàng',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: xhr.responseJSON?.message ?? 'Không thể thêm vào giỏ hàng'
+                });
+            }
+        });
     });
-});
+
+// $(document).on("click", ".js-addcart-detail", function(){
+//     let productId = $(this).data("id");
+//     let sizeId = $(".size-button.active").data("size-id");
+//     let sizeName = $(".size-button.active").data("size");
+//     let quantity = $(".show-modal #quantity-product").val();
+//     alert("asdasd");
+//     if (!sizeId) {
+//         Swal.fire({
+//             title: "Chưa chọn size!",
+//             text: "Vui lòng chọn size trước khi thêm vào giỏ hàng.",
+//             icon: "warning"
+//         });
+//         return;
+//     }
+
+//     // $.ajax({
+//     //     url: "/cart/add",
+//     //     type: "POST",
+//     //     data: {
+//     //         id: productId,
+//     //         size_id: sizeId,
+//     //         size_name: sizeName,
+//     //         quantity: quantity
+//     //     },
+//     //     success: function(response) {
+//     //         alert("asdsadas");
+//     //         Swal.fire({
+//     //             title: "Thành công!",
+//     //             text: "Sản phẩm đã được thêm vào giỏ hàng.",
+//     //             icon: "success"
+//     //         });
+//     //         // console.log(response);
+//     //         $(".cart-content").html(response.cart_content);
+//     //         // $(".icon-header-noti").attr("data-notify", response.total_items);
+//     //     },
+//     //     error: function(){
+
+//     //     }
+//     // });
+// });
+
 
 jQuery(document).ready(function() {
     // Bấm chọn size
@@ -117,7 +178,7 @@ $(document).ready(function() {
             if (result.isConfirmed) {
                 // Nếu người dùng đồng ý xóa
                 $.ajax({
-                    url: "/cart/remove",
+                    url: url,
                     type: "POST",
                     data: {
                         rowId: rowId,
@@ -125,7 +186,7 @@ $(document).ready(function() {
                     },
                     success: function(response) {
                         if (response.success) {
-                            $(".cart-content").html(response.cart_content);
+                            $(".cart-content").html(response.html);
                             Swal.fire({
                                 title: "Đã xóa!",
                                 text: "Sản phẩm đã được xóa khỏi giỏ hàng.",

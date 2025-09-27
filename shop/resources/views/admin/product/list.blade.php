@@ -11,7 +11,6 @@
                 <th>Danh mục</th>
                 <th>Giá</th>
                 <th>Giá khuyến mãi</th>
-                <th>Size và số lượng</th>
                 <th>Trạng thái</th>
                 <th style="width: 120px">&nbsp;</th>
             </tr>
@@ -40,14 +39,6 @@
                 <td>{{ $product->menu->name }}</td>
                 <td>{{ number_format($product->price)}}đ</td>
                 <td>{{ !empty($product->price_sale) ? number_format($product->price_sale) .'đ' : 'Không áp dụng'}}</td>
-                <td>
-                    @foreach($product->sizes as $size)
-                    <div>
-                        {{ $size->name }}:
-                        {{ $size->pivot->quantity }} cái
-                    </div>
-                    @endforeach
-                </td>
                 <td>{!! \App\Helpers\Helper::active($product->active) !!}</td>
                 <td style="width: 100px">
                     <a class="btn btn-primary btn-sm" href="{{ url('admin/products/edit/' . $product->id) }}">

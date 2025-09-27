@@ -21,7 +21,8 @@ class ProductController extends Controller
     }
     public function index(MenuService $menuService, ProductService $productService, Request $request)
     {
-        $menus = $menuService->getParent();
+        $menus = $menuService->getParentWithChildren(); // Lấy cha + con
+
         $menuId = $request->query('menu_id');
         $filter = $request->query('filter');
 
@@ -33,6 +34,7 @@ class ProductController extends Controller
         } else {
             $products = $productService->getAll();
         }
+
         return view('frontend.product.product', [
             'title' => 'Sản phẩm',
             'menus' => $menus,
@@ -40,36 +42,45 @@ class ProductController extends Controller
         ]);
     }
 
-    public function detail(MenuService $menuService, int $productID)
-    {
 
-        $menus = $menuService->getParent();
-        $sizes = Size::all();
-        $product = resolve(ProductService::class)->show($productID, ["menu"]);
-        $product->loadCount("reviews");
+public function detail(MenuService $menuService, int $productID)
+{
+    $menus = $menuService->getParent();
+    $sizes = Size::all();
+    $product = resolve(ProductService::class)->show($productID, ["menu"]);
+    $product->loadCount("reviews");
+    $product->load(["sizes", "reviews"]);
 
-        $product->load(["sizes", "reviews"]);
-        // Lấy danh mục con của sản phẩm
-        $category = Menu::find($product->menu_id);
+    // Lấy danh mục con của sản phẩm
+    $category = Menu::find($product->menu_id);
 
-        // Kiểm tra danh mục cha của nó
-        $parentCategory = $category ? Menu::find($category->parent_id) : null;
+    // Kiểm tra danh mục cha của nó
+    $parentCategory = $category ? Menu::find($category->parent_id) : null;
 
-        // Kiểm tra danh mục cha cấp cao nhất
-        $rootCategory = $parentCategory ? Menu::find($parentCategory->parent_id) : null;
-        return view('frontend.product.productDetail', [
-            "id" => $productID,
-            'title' => 'Chi tiết sản phẩm',
-            'menus' => $menus,
-            "category" => $category,
-            "parentCategory" => $parentCategory,
-            "rootCategory" => $rootCategory,
-            "sizes" => $sizes,
-            "product" => $product,
-            "availableSizes" => $product->sizes->pluck("id")->toArray(),
-            "reviewCount" => (int) $product->reviews_count
-        ]);
-    }
+    // Kiểm tra danh mục cha cấp cao nhất
+    $rootCategory = $parentCategory ? Menu::find($parentCategory->parent_id) : null;
+
+    // 🔥 Lấy sản phẩm liên quan (cùng danh mục, khác ID hiện tại)
+    $relatedProducts = Product::where('menu_id', $product->menu_id)
+        ->where('id', '!=', $product->id)
+        ->take(4) // số sản phẩm liên quan hiển thị
+        ->get();
+
+    return view('frontend.product.productDetail', [
+        "id" => $productID,
+        'title' => 'Chi tiết sản phẩm',
+        'menus' => $menus,
+        "category" => $category,
+        "parentCategory" => $parentCategory,
+        "rootCategory" => $rootCategory,
+        "sizes" => $sizes,
+        "product" => $product,
+        "availableSizes" => $product->sizes->pluck("id")->toArray(),
+        "reviewCount" => (int) $product->reviews_count,
+        "relatedProducts" => $relatedProducts, // 👈 truyền sang view
+    ]);
+}
+
 
     public function showDetailInPopup(int $productID)
     {
@@ -109,35 +120,35 @@ class ProductController extends Controller
         // Lọc theo khoảng giá
         if (!empty($priceRange) && $priceRange !== 'all') {
             switch ($priceRange) {
-                case '1-10':
+                case '0-499000':
                     $query->where(function ($q) {
-                        $q->whereBetween('price_sale', [1, 10])
+                        $q->whereBetween('price_sale', [0, 499000])
                             ->orWhere(function ($q2) {
-                                $q2->whereNull('price_sale')->whereBetween('price', [1, 10]);
+                                $q2->whereNull('price_sale')->whereBetween('price', [0, 499000]);
                             });
                     });
                     break;
-                case '11-50':
+                case '500000-999000':
                     $query->where(function ($q) {
-                        $q->whereBetween('price_sale', [11, 50])
+                        $q->whereBetween('price_sale', [500000, 999000])
                             ->orWhere(function ($q2) {
-                                $q2->whereNull('price_sale')->whereBetween('price', [11, 50]);
+                                $q2->whereNull('price_sale')->whereBetween('price', [500000, 999000]);
                             });
                     });
                     break;
-                case '51-100':
+                case '1000000-2999000':
                     $query->where(function ($q) {
-                        $q->whereBetween('price_sale', [51, 100])
+                        $q->whereBetween('price_sale', [1000000, 2999000])
                             ->orWhere(function ($q2) {
-                                $q2->whereNull('price_sale')->whereBetween('price', [51, 100]);
+                                $q2->whereNull('price_sale')->whereBetween('price', [1000000, 2999000]);
                             });
                     });
                     break;
-                case '100+':
+                case '3000000+':
                     $query->where(function ($q) {
-                        $q->where('price_sale', '>', 100)
+                        $q->where('price_sale', '>', 3000000)
                             ->orWhere(function ($q2) {
-                                $q2->whereNull('price_sale')->where('price', '>', 100);
+                                $q2->whereNull('price_sale')->where('price', '>', 3000000);
                             });
                     });
                     break;

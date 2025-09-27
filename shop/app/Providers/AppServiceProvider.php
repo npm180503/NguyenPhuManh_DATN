@@ -30,11 +30,13 @@ class AppServiceProvider extends ServiceProvider
         $reviewAdminCount = $reviewAdminService->getReviewAdminCount();
         $messageCount = $contactAdminService->getMessageCount();
         $orderCount = Order::where('status', 'pending')->count();
+        
         View::composer('*', function ($view) use ($contactAdminService, $messageCount, $reviewAdminService, $reviewAdminCount, $orderCount) {
             $view->with('messageCount', $messageCount);
             $view->with('reviewAdminCount', $reviewAdminCount);
             $view->with('orderCount', $orderCount);
         });
+
         View::composer('components.cart-component', function ($view) {
             $items = collect();
 

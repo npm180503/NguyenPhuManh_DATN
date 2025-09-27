@@ -129,12 +129,12 @@
                                         </div>
                                     </td>
                                     <td class="column-6 text-center">
-                                        <span class="item-total">
+                                        <span class="item-total" id="row-{{ $item->product_id }}">
                                             {{ number_format(($item->product->price_sale ?? $item->product->price) * $item->quantity) }}
                                             VND
                                         </span>
-                                        <button class="btn-remove-cart" data-url="{{ route('cart.remove', ':id') }}"
-                                            data-rowid="{{ $item->product->id }}_{{ $item->size->name }}">
+                                        <button class="btn-remove-cart" data-url="{{ route('cart.remove', $item->id) }}"
+                                            data-rowid="{{ $item->id }}">
                                             <i class="fa-solid fa-xmark"></i>
                                         </button>
                                     </td>
@@ -152,9 +152,8 @@
                             <div class="size-208">
                                 <span class="stext-110 cl2">Tổng:</span>
                             </div>
-                            <div class="size-209">
+                            <div class="size-209" id="total-amount">
                                 <span class="mtext-110 cl2">{{ number_format($cartTotal) }} VND</span>
-
                             </div>
                         </div>
 
@@ -179,7 +178,7 @@
                             <div class="checkout-select">
                                 <select name="payment_method">
                                     <option value="cod">Thanh toán khi nhận hàng (COD)</option>
-                                    <option value="momo">Thanh toán qua Momo</option>
+                                    <option value="momo">Thanh toán qua MoMo</option>
                                 </select>
                             </div>
                         </div>
@@ -207,15 +206,16 @@
                 e.preventDefault(); // Ngăn chặn sự kiện chạy 2 lần nếu form có submit
                 if (processing == true) return;
                 processing = true;
+
                 let row = $(this).closest('tr');
                 let input = row.find('.num-product');
                 let newValue = parseInt(input.val()) + ($(this).hasClass('btn-num-product-up-cart') ? 1 : -
                     1);
-                newValue = Math.max(1, newValue); // Không cho số lượng < 1
+                newValue = Math.max(1, newValue);
                 input.val(newValue);
                 let itemId = input.data('item-id');
-                let action = 'update'; // hoặc bạn có thể thêm data-action vào input như mình hướng dẫn
-                let url = "{{ url('cart/update') }}/" + itemId + "/" + action;
+                let url = "{{ url('cart/update') }}/" + itemId;
+
                 $.ajax({
                     url: url,
                     method: "POST",
@@ -224,9 +224,8 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(res) {
-                        $('.mtext-110.cl2').text(res.total.toLocaleString('vi-VN') + ' VND');
-                        row.find('.item-total').text(res.row_total.toLocaleString('vi-VN') +
-                            ' VND');
+                        $(`#row-${itemId}`).html(res.amount);
+                        $('#total-amount span').text(res.total_amount);
                     },
                     error: function(xhr) {
                         console.log(xhr);
@@ -236,14 +235,45 @@
                 });
             });
 
-            $('.num-product').off('input').on('input', function() {
-                let row = $(this).closest('tr');
-                updateTotal(row);
-            });
+
+            // $('.num-product').off('input').on('input', function() {
+            //     let row = $(this).closest('tr');
+            //     updateTotal(row);
+            // });
 
             // Cập nhật tổng tiền khi load trang
-            $('.table-shopping-cart tr').each(function() {
-                updateTotal($(this));
+            // $('.table-shopping-cart tr').each(function() {
+            //     // updateTotal($(this));
+            // });
+        });
+
+        $(document).ready(function() {
+            $(document).on("change", ".num-product", function() {
+                let input = $(this);
+                let newValue = parseInt(input.val());
+                if (isNaN(newValue) || newValue < 1) {
+                    newValue = 1; 
+                    input.val(newValue);
+                }
+
+                let itemId = input.data("item-id");
+                let url = "{{ url('cart/update') }}/" + itemId;
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: {
+                        quantity: newValue,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        $(`#row-${itemId}`).html(res.amount); 
+                        $("#total-amount span").text(res.total_amount);
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                    }
+                });
             });
         });
     </script>
@@ -271,7 +301,7 @@
                     if (result.isConfirmed) {
                         // Nếu người dùng đồng ý xóa
                         $.ajax({
-                            url: "/cart/remove",
+                            url: url,
                             type: "POST",
                             data: {
                                 rowId: rowId,
@@ -279,7 +309,7 @@
                             },
                             success: function(response) {
                                 if (response.success) {
-                                    $(".cart-content").html(response.cart_content);
+                                    $(".cart-content").html(response.html);
                                     Swal.fire({
                                         title: "Đã xóa!",
                                         text: "Sản phẩm đã được xóa khỏi giỏ hàng.",
@@ -335,31 +365,35 @@
                     return;
                 }
 
-                $.ajax({
-                    url: "{{ route('fr.order') }}",
-                    method: "POST",
-                    data: $('form').serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Bạn đã đặt hàng thành công',
-                            text: 'Cảm ơn bạn.',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed || result.dismiss === Swal
-                                .DismissReason.timer) {
-                                window.location.href = '/';
-                            }
-                        });
-                    },
+$.ajax({
+    url: "{{ route('fr.order') }}",
+    method: "POST",
+    data: $('form').serialize(),
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function(response) {
+        if (response.payment_method === "momo") {
+            // Nếu chọn momo thì chuyển hướng đến route xử lý momo
+            window.location.href = "{{ route('fr.momo.payment') }}?order_id=" + response.order_id;
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Bạn đã đặt hàng thành công',
+                text: 'Cảm ơn bạn.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
+                    window.location.href = '/';
+                }
+            });
+        }
+    },
+    error: function(xhr) {
+        alert('Lỗi: ' + xhr.responseJSON.message);
+    }
+});
 
-                    error: function(xhr) {
-                        alert('Lỗi: ' + xhr.responseJSON.message);
-                    }
-                });
 
             });
 

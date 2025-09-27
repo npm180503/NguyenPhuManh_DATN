@@ -1,9 +1,12 @@
 <style>
     .main-menu li.active a {
-    color: #ff6600; /* Màu cam */
-    font-weight: bold;
-    border-bottom: 2px solid #ff6600; /* Gạch chân */
-}
+        color: #ff6600;
+        /* Màu cam */
+        font-weight: bold;
+        border-bottom: 2px solid #ff6600;
+        /* Gạch chân */
+    }
+
     .active {
         font-weight: bold;
         /* Hoặc bất kỳ kiểu dáng nào bạn muốn */
@@ -126,6 +129,21 @@
         background-color: red;
         border-radius: 50%;
     }
+
+    .menu-desktop .main-menu li a {
+        color: #000;
+        /* chữ đen */
+        text-decoration: none;
+        font-weight: 500;
+        /* Viền trắng nổi bật */
+        text-shadow:
+            1px 1px 0 #fff,
+            -1px 1px 0 #fff,
+            1px -1px 0 #fff,
+            -1px -1px 0 #fff;
+        transition: color 0.3s ease;
+    }
+    
 </style>
 <div>
     <header>
@@ -141,7 +159,7 @@
                             class="brand-image img-circle elevation-3"
                             style="opacity: .8; width: 50px; height: 120px; border-radius: 50%;">
                         <span class="brand-text"
-                            style="font-family: 'Lobster', cursive; font-size: 32px; color: #ff6347; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding-left: 10px; margin-top: 5px;">PmouShop</span>
+                            style="font-family: 'Lobster', cursive; font-size: 32px; color: #ff6347; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding-left: 10px; margin-top: 5px;">PMSTORE</span>
                     </a>
 
                     <!-- Menu desktop -->
@@ -189,13 +207,11 @@
                     <!-- Icon header -->
                     <div class="wrap-icon-header flex-w flex-r-m">
                         @if (auth('frontend')->check())
-                            <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"
-                                id="notification-icon">
+                            <div @class([
+                                'icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11',
+                                'icon-header-noti' => !$orders->isEmpty(),
+                            ]) id="notification-icon" @if (!$orders->isEmpty()) data-notify="{{ $orders->count() }}" @endif>
                                 <i class="fa-regular fa-bell"></i>
-
-                                @if (!$orders->isEmpty())
-                                    <span class="notification-dot"></span>
-                                @endif
                             </div>
                             <div class="notification-dropdown" id="notification-dropdown">
                                 <div class="notification-header">Thông báo đơn hàng</div>
@@ -258,7 +274,7 @@
                         class="brand-image img-circle elevation-3"
                         style="opacity: .8; width: 50px; height: 120px; border-radius: 50%; margin-top:10px;">
                     <span class="brand-text"
-                        style="font-family: 'Lobster', cursive; font-size: 32px; color: #ff6347; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding-left: 60px;">PmouShop</span>
+                        style="font-family: 'Lobster', cursive; font-size: 32px; color: #ff6347; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding-left: 60px;">PMSTORE</span>
                 </a>
             </div>
 
@@ -266,10 +282,11 @@
             <div class="wrap-icon-header flex-w flex-r-m m-r-15">
 
                 @if (auth('frontend')->check())
-                    <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"
-                        id="notification-icon">
+                    <div @class([
+                        'icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11',
+                        'icon-header-noti' => !$orders->isEmpty(),
+                    ]) id="notification-icon">
                         <i class="fa-regular fa-bell"></i>
-
                         @if (!$orders->isEmpty())
                             <span class="notification-dot"></span>
                         @endif

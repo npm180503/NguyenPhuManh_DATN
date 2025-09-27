@@ -41,8 +41,9 @@
     }
 </style>
 <div>
-    <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart"
-        @if (count($cart->content()) > 0) data-notify="{{ count($cart->content()) }}" @endif>
+    <div 
+        @class(['icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-cart', 'icon-header-noti' => $cartItems->count() > 0])
+        @if ($cartItems->count() > 0) data-notify="{{ $cartItems->count() }}" @endif>
         <i class="zmdi zmdi-shopping-cart"></i>
     </div>
     <div class="wrap-header-cart js-panel-cart">
@@ -54,7 +55,6 @@
                     <i class="zmdi zmdi-close"></i>
                 </div>
             </div>
-
             <div class="header-cart-content flex-w js-pscroll">
                 <ul class="header-cart-wrapitem w-full" id="cart-items">
                     @if (auth('frontend')->check())
