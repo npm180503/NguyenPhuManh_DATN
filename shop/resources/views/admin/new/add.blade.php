@@ -6,14 +6,14 @@
             <h4>Thêm tin tức mới</h4>
         </div>
         <div class="card-body">
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.new.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group mb-3">
                     <label for="title">Tiêu đề</label>
-                    <input type="text" id="title" name="title" 
-                           class="form-control @error('title') is-invalid @enderror"
-                           value="{{ old('title') }}" placeholder="Nhập tiêu đề...">
+                    <input type="text" id="title" name="title"
+                        class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}"
+                        placeholder="Nhập tiêu đề...">
                     @error('title')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -21,19 +21,49 @@
 
                 <div class="form-group mb-3">
                     <label for="content">Nội dung</label>
-                    <textarea id="content" name="content" rows="6"
-                              class="form-control @error('content') is-invalid @enderror"
-                              placeholder="Nhập nội dung...">{{ old('content') }}</textarea>
+                    <textarea id="content" name="content" rows="6" class="form-control @error('content') is-invalid @enderror"
+                        placeholder="Nhập nội dung...">{{ old('content') }}</textarea>
                     @error('content')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="image">Ảnh đại diện</label>
-                    <input type="file" id="image" name="image" class="form-control">
+                    <label for="thumb">Chọn hình ảnh</label>
+                    <input type="file" id="imageInput" name="thumb" accept="image/*" onchange="previewImage(this);">
+                    <img id="preview" src="{{ Session::get('temp_image') ? asset(Session::get('temp_image')) : '#' }}"
+                        alt="Preview" style="max-width: 100px; {{ Session::get('temp_image') ? '' : 'display: none;' }}">
+                    @if (Session::has('temp_image'))
+                        <input type="hidden" name="temp_image" value="{{ Session::get('temp_image') }}">
+                    @endif
+                    @error('thumb')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
+                <script>
+                    function previewImage(input) {
+                        var preview = document.getElementById('preview');
 
+                        if (input.files && input.files[0]) {
+                            var reader = new FileReader();
+
+                            reader.onload = function(e) {
+                                preview.src = e.target.result;
+                                preview.style.display = 'block';
+                            }
+
+                            reader.readAsDataURL(input.files[0]);
+                        } else {
+                            @if (Session::has('temp_image'))
+                                preview.src = "{{ asset(Session::get('temp_image')) }}";
+                                preview.style.display = 'block';
+                            @else
+                                preview.src = '#';
+                                preview.style.display = 'none';
+                            @endif
+                        }
+                    }
+                </script>
                 <div class="form-group mb-3">
                     <label for="status">Trạng thái</label>
                     <select name="status" id="status" class="form-select">
@@ -44,8 +74,8 @@
 
                 <div class="form-group mb-3">
                     <label for="published_at">Ngày đăng</label>
-                    <input type="date" id="published_at" name="published_at" 
-                           class="form-control" value="{{ old('published_at', date('Y-m-d')) }}">
+                    <input type="date" id="published_at" name="published_at" class="form-control"
+                        value="{{ old('published_at', date('Y-m-d')) }}">
                 </div>
 
                 <div class="d-flex justify-content-between">

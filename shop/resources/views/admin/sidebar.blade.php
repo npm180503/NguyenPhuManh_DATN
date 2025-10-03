@@ -199,7 +199,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="" class="nav-link">
+                            <a href="{{ route('admin.new.list') }}" class="nav-link">
                                 <i class="nav-icon fas fa-bars"></i>
                                 <p>Danh sách tin tức</p>
                             </a>

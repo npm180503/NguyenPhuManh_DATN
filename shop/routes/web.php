@@ -22,6 +22,7 @@ use App\Http\Controllers\FrontEnd\PayController;
 use App\Http\Controllers\FrontEnd\ProductController;
 use App\Http\Controllers\FrontEnd\ReviewController;
 use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\FrontEnd\NewsController;
 use App\Http\Controllers\FrontEnd\OrderController;
 use App\Http\Controllers\Frontend\UserController;
 
@@ -110,9 +111,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('{id}/invoice', [OrderAdminController::class, 'invoicePdf'])->name('admin.order.invoice');
         });
 
-        Route::prefix('news')->group(function () {
+        Route::prefix('new')->group(function () {
             Route::get('add', [NewsAdminController::class, 'create'])->name('admin.new.create');
-
+            Route::post('add', [NewsAdminController::class, 'store'])->name('admin.new.store');
+            Route::get('list', [NewsAdminController::class, 'index'])->name('admin.new.list');
+            Route::get('edit/{id}', [NewsAdminController::class, 'edit'])->name('admin.new.edit');
+            Route::post('edit/{id}', [NewsAdminController::class, 'update'])->name('admin.new.update');
+            Route::delete('delete/{id}', [NewsAdminController::class, 'destroy'])->name('admin.new.delete');
         });
     });
 });
@@ -134,6 +139,11 @@ Route::get("about", [AboutController::class, "index"])->name("fr.about");
 Route::prefix('contact')->group(function () {
     Route::get("", [ContactController::class, "index"])->name("fr.contact");
     Route::post("send", [ContactController::class, "store"])->name("fr.contact.send");
+});
+
+Route::prefix('new')->group(function () {
+    Route::get('/', [NewsController::class, 'index'])->name('fr.new');
+    Route::get('/{id}-{slug}.html', [NewsController::class, 'show'])->name('fr.new.show');
 });
 
 Route::middleware(['auth:frontend'])->group(function () {

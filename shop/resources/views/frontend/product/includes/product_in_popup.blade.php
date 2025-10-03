@@ -36,14 +36,25 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.3);
         z-index: 9999;
         justify-content: center;
         align-items: center;
+        animation: fadeIn 0.3s ease forwards;
     }
 
     .wrap-modal1.show-modal {
         display: flex;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 
     .wrap-pic-w img {

@@ -10,7 +10,9 @@ use App\Http\Services\Menu\MenuService;
 use App\Models\Size;
 use Gloudemans\Shoppingcart\Cart as ShoppingcartCart;
 use Gloudemans\Shoppingcart\Facades\Cart as FacadesCart;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
+use App\Models\News;
+
 class MainController extends Controller
 {
     public function index(SliderService $sliderService, ProductService $productService, MenuService $menuService)
@@ -19,7 +21,9 @@ class MainController extends Controller
         $products = $productService->getWithPagition(request()->all(), request("limit", 10), request("page", 1));
         $menus = $menuService->getParent();
         $sizes = Size::all();
-    
+        $latestNews = News::orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
         // Lấy danh sách size có sẵn cho từng sản phẩm
         $availableSizes = [];
         foreach ($products as $product) {
@@ -28,7 +32,7 @@ class MainController extends Controller
                 ->pluck('size_id')
                 ->toArray();
         }
-        
+
         // dd($availableSizes);
         return view('frontend.homepage.main', [
             'title' => 'Trang chủ',
@@ -36,8 +40,8 @@ class MainController extends Controller
             'products' => $products,
             'menus' => $menus,
             'sizes' => $sizes,
-            'availableSizes' => $availableSizes // Truyền danh sách size có sẵn vào View
+            'availableSizes' => $availableSizes, // Truyền danh sách size có sẵn vào View
+            'latestNews' => $latestNews
         ]);
     }
-    
 }

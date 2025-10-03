@@ -185,6 +185,9 @@
                                 <a href="{{ route('fr.product') }}">Cửa hàng</a>
                             </li>
 
+                            <li class="{{ request()->is('new') ? 'active' : '' }}">
+                                <a href="{{ route('fr.new') }}">Tin tức</a>
+                            </li>
 
                             <li class="{{ request()->is('about') ? 'active' : '' }}">
                                 <a href="{{ route('fr.about') }}">Giới thiệu</a>
