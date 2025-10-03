@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderInvoiceMail;
 
 class OrderAdminController extends Controller
 {
@@ -28,13 +31,13 @@ class OrderAdminController extends Controller
     {
         // Tìm review theo ID
         $order = Order::findOrFail($id);
-    
+
         // Cập nhật trạng thái của review thành "replied"
         $order->status = 'processing';
-    
+
         // Lưu các thay đổi vào database
         $order->save();
-    
+
         // Chuyển hướng lại trang review chưa phản hồi và thông báo
         return redirect()->route('admin.order.pending')->with('success', 'Đơn hàng đã đánh dấu chuẩn bị.');
     }
@@ -51,13 +54,13 @@ class OrderAdminController extends Controller
     {
         // Tìm review theo ID
         $order = Order::findOrFail($id);
-    
+
         // Cập nhật trạng thái của review thành "replied"
         $order->status = 'shipped';
-    
+
         // Lưu các thay đổi vào database
         $order->save();
-    
+
         // Chuyển hướng lại trang review chưa phản hồi và thông báo
         return redirect()->route('admin.order.processing')->with('success', 'Đơn hàng đã đánh dấu đang giao');
     }
@@ -74,13 +77,13 @@ class OrderAdminController extends Controller
     {
         // Tìm review theo ID
         $order = Order::findOrFail($id);
-    
+
         // Cập nhật trạng thái của review thành "replied"
         $order->status = 'completed';
-    
+
         // Lưu các thay đổi vào database
         $order->save();
-    
+
         // Chuyển hướng lại trang review chưa phản hồi và thông báo
         return redirect()->route('admin.order.shipped')->with('success', 'Đơn hàng đã đánh dấu giao thành công');
     }
@@ -97,14 +100,28 @@ class OrderAdminController extends Controller
     {
         // Tìm review theo ID
         $order = Order::findOrFail($id);
-    
+
         // Cập nhật trạng thái của review thành "replied"
         $order->status = 'canceled';
-    
+
         // Lưu các thay đổi vào database
         $order->save();
-    
+
         // Chuyển hướng lại trang review chưa phản hồi và thông báo
         return redirect()->route('admin.order.pending')->with('success', 'Đơn hàng đã đánh dấu hủy');
+    }
+
+
+    public function invoicePdf($id)
+    {
+        $order = \App\Models\Order::with('orderItems.product', 'orderItems.size')->findOrFail($id);
+        // dd($order->payment_status, $order->payment_method);
+
+        $pdf = PDF::loadView('admin.order.invoice', compact('order'))
+            ->setPaper('A4', 'portrait');
+
+        $filename = 'hoadon_' . $order->order_code . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

@@ -143,7 +143,18 @@
             -1px -1px 0 #fff;
         transition: color 0.3s ease;
     }
-    
+
+    .dropdown-menu {
+        min-width: 200px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 </style>
 <div>
     <header>
@@ -210,7 +221,8 @@
                             <div @class([
                                 'icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11',
                                 'icon-header-noti' => !$orders->isEmpty(),
-                            ]) id="notification-icon" @if (!$orders->isEmpty()) data-notify="{{ $orders->count() }}" @endif>
+                            ]) id="notification-icon"
+                                @if (!$orders->isEmpty()) data-notify="{{ $orders->count() }}" @endif>
                                 <i class="fa-regular fa-bell"></i>
                             </div>
                             <div class="notification-dropdown" id="notification-dropdown">
@@ -243,7 +255,7 @@
                             </div>
                         @endif
 
-                        <a href="{{ route('fr.login') }}"
+                        {{-- <a href="{{ route('fr.login') }}"
                             class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10">
                             @auth('frontend')
                                 <!-- Nếu đã đăng nhập, hiển thị icon đăng xuất và thực hiện hành động đăng xuất -->
@@ -257,7 +269,49 @@
                                 <!-- Nếu chưa đăng nhập, hiển thị icon tài khoản -->
                                 <i class="zmdi zmdi-account"></i> <!-- Icon tài khoản -->
                             @endauth
-                        </a>
+                        </a> --}}
+
+                        @auth('frontend')
+                            <!-- Avatar + Dropdown -->
+                            @php
+                                $user = auth('frontend')->user();
+                            @endphp
+
+                            <div class="dropdown">
+                                <img src="{{ asset($user->thumb) }}" alt="avatar" class="rounded-circle"
+                                    style="width:35px;height:35px;cursor:pointer;" id="userDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('fr.user.profile') }}">
+                                            <i class="fa-regular fa-user"></i> Hồ sơ cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('fr.order.list') }}">
+                                            <i class="fa-solid fa-box"></i> Đơn hàng của tôi
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form action="{{ route('fr.logout') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @else
+                            <!-- Nếu chưa đăng nhập, hiển thị icon tài khoản -->
+                            <a href="{{ route('fr.login') }}"
+                                class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10">
+                                <i class="zmdi zmdi-account"></i>
+                            </a>
+                        @endauth
+
+
 
 
                     </div>
@@ -405,3 +459,4 @@
         }
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,7 +1,7 @@
 <!-- Slider -->
 <style>
     .section-slide {
-    margin-top: 80px; /* cao bằng header desktop */
+    margin-top: 30px; /* cao bằng header desktop */
 }
 .item-slick1 {
     height: 500px; /* hoặc 500px tùy ý */

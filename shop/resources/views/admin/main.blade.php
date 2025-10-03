@@ -80,6 +80,7 @@
     <!-- ./wrapper -->
 
     @include('admin.footer')
+    @yield('scripts')
 </body>
 
 </html>

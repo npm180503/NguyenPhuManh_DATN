@@ -1,7 +1,7 @@
 @extends('frontend.layout')
 @section('content')
 	<!-- Title page -->
-	<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('template/images/bg-02.jpg'); margin-top:120px">
+	<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('template/images/bg-02.jpg'); margin-top:30px">
 		<h2 class="ltext-105 cl0 txt-center">
 			Giới thiệu
 		</h2>

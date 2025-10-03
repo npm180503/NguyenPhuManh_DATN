@@ -31,8 +31,7 @@ class LoginAdminController extends Controller
             'email' => $request->input('email'),
             'password' => $request->input('password')
         ], $request->input('remember'))) {
-            
-                return redirect()->route('admin');
+            return redirect()->route('admin.dashboard');
         }
 
         session()->flash('error', 'Đăng nhập không thành công');

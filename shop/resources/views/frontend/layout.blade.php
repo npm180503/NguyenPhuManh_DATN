@@ -8,10 +8,27 @@
         rel="stylesheet">
     @stack('css_bot')
 </head>
+<style>
+header {
+    position: fixed; /* hoặc sticky */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #fff; /* để không bị trong suốt */
+}
 
+/* bù chiều cao header để content không bị dính */
+body {
+    margin: 0;
+    padding-top: 80px; /* đổi 100px = đúng chiều cao header/menu */
+}
+
+
+</style>
 <body class="animsition">
     <div class="econmerce-content">
-        <x-menu-component></x-menu-component>
+        <x-menu-component ></x-menu-component>
         
         @yield('content')
     </div>

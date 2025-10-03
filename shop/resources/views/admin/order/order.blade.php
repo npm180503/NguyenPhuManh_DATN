@@ -60,15 +60,14 @@
     <table class="table">
         <thead>
             <tr>
-                <th style="width: 50px">ID</th>
-                <th style="width: 150px">Tên khách hàng</th>
-                <th style="width: 150px">Số điện thoại</th>
-                <th style="width: 150px">Địa chỉ</th>
-                <th style="width: 100px">Sản phẩm</th>
-                <th style="width: 150px">Tổng tiền</th>
-                <th style="width: 150px">Thanh toán</th>
-                <th>Thời gian</th>
-                <th style="width: 200px">Hành động</th>
+                <th>#</th>
+                <th>Khách hàng</th>
+                <th>SĐT</th>
+                <th>Trạng thái</th>
+                <th>Thanh toán</th>
+                <th>Sản phẩm</th>
+                <th>Tổng tiền</th>
+                <th>Thao tác</th>
             </tr>
 
         </thead>
@@ -78,53 +77,85 @@
                     <td>{{ $order->id }}</td>
                     <td>{{ $order->customer_name }}</td>
                     <td>{{ $order->customer_phone }}</td>
-                    <td>{{ $order->customer_address }}</td>
                     <td>
-                        @foreach ($order->orderItems as $item)
-                            <span>{{ $item->product->name }} - {{ $item->quantity }} -
-                                {{ optional($item->size)->name ?? 'Không có size' }}</span>
-                        @endforeach
+                        <span
+                            class="badge 
+                    @if ($order->status == 'pending') bg-primary
+                    @elseif($order->status == 'processing') bg-info
+                    @elseif($order->status == 'shipped') bg-warning
+                    @elseif($order->status == 'completed') bg-success
+                    @elseif($order->status == 'canceled') bg-danger
+                    @else bg-secondary @endif">
+                            {{ ucfirst($order->status) }}
+                        </span>
                     </td>
-                    <td>{{ $order->total_price }} VND</td>
-                    <td>{{ $order->payment_method }}</td>
-                    <td>{{ $order->updated_at }}</td>
                     <td>
+                        <span class="badge {{ $order->payment_status == 'success' ? 'bg-success' : 'bg-warning' }}">
+                            {{ $order->payment_method }} -
+                            {{ $order->payment_status == 'success' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+                        </span>
+                    </td>
+                    <td>{{ $order->orderItems->count() }} sp</td>
+                    <td>{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
+                    <td>
+                        <!-- Nút Xem -->
+                        <button type="button" class="btn btn-sm btn-info mb-1" data-bs-toggle="modal"
+                            data-bs-target="#orderModal{{ $order->id }}">
+                            Xem
+                        </button>
+
+                        <!-- Nút Xuất hóa đơn -->
+                        <a href="{{ route('admin.order.invoice', $order->id) }}" class="btn btn-primary">Xuất hóa đơn</a>
+
+
                         @if ($order->status == 'pending')
                             <form action="{{ route('admin.order.markAsProcessing', $order->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Chuẩn bị</button>
+                                <button type="submit" class="btn btn-success btn-sm mb-1">Chuẩn bị</button>
                             </form>
                             <form action="{{ route('admin.order.markAsCanceled', $order->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-sm"><i
+                                <button type="submit" class="btn btn-danger btn-sm mb-1"><i
                                         class="fa-solid fa-xmark"></i></button>
                             </form>
                         @elseif ($order->status == 'processing')
                             <form action="{{ route('admin.order.markAsShipped', $order->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Giao hàng</button>
+                                <button type="submit" class="btn btn-success btn-sm mb-1">Giao hàng</button>
                             </form>
                             <form action="{{ route('admin.order.markAsCanceled', $order->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-sm"><i
+                                <button type="submit" class="btn btn-danger btn-sm mb-1"><i
                                         class="fa-solid fa-xmark"></i></button>
                             </form>
                         @elseif ($order->status == 'shipped')
                             <form action="{{ route('admin.order.markAsCompleted', $order->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Đã giao</button>
+                                <button type="submit" class="btn btn-success btn-sm mb-1">Đã giao</button>
                             </form>
                         @endif
                     </td>
+
+
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+    @foreach ($orders as $order)
+        @include('admin.order.order-modal', ['order' => $order])
+    @endforeach
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS (bundle có Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     {!! $orders->links() !!}
 @endsection

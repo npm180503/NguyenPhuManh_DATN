@@ -170,6 +170,10 @@
                                 <input type="text" id="address" name="address" placeholder="Địa chỉ giao hàng"
                                     required>
                             </div>
+                            <div class="checkout-input">
+                                <input type="text" id="email" name="email" placeholder="Email"
+                                    required>
+                            </div>
                         </div>
 
                         <!-- Chọn hình thức thanh toán -->
@@ -252,7 +256,7 @@
                 let input = $(this);
                 let newValue = parseInt(input.val());
                 if (isNaN(newValue) || newValue < 1) {
-                    newValue = 1; 
+                    newValue = 1;
                     input.val(newValue);
                 }
 
@@ -267,7 +271,7 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(res) {
-                        $(`#row-${itemId}`).html(res.amount); 
+                        $(`#row-${itemId}`).html(res.amount);
                         $("#total-amount span").text(res.total_amount);
                     },
                     error: function(xhr) {
@@ -365,34 +369,37 @@
                     return;
                 }
 
-$.ajax({
-    url: "{{ route('fr.order') }}",
-    method: "POST",
-    data: $('form').serialize(),
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    },
-    success: function(response) {
-        if (response.payment_method === "momo") {
-            // Nếu chọn momo thì chuyển hướng đến route xử lý momo
-            window.location.href = "{{ route('fr.momo.payment') }}?order_id=" + response.order_id;
-        } else {
-            Swal.fire({
-                icon: 'success',
-                title: 'Bạn đã đặt hàng thành công',
-                text: 'Cảm ơn bạn.',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
-                    window.location.href = '/';
-                }
-            });
-        }
-    },
-    error: function(xhr) {
-        alert('Lỗi: ' + xhr.responseJSON.message);
-    }
-});
+                $.ajax({
+                    url: "{{ route('fr.order') }}",
+                    method: "POST",
+                    data: $('form').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.payment_method === "Momo") {
+                            // Nếu chọn momo thì chuyển hướng đến route xử lý momo
+                            window.location.href = "{{ route('fr.momo.payment') }}?order_id=" +
+                                response.order_id;
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Bạn đã đặt hàng thành công',
+                                text: 'Cảm ơn bạn.',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed || result.dismiss === Swal
+                                    .DismissReason.timer) {
+                                    window.location.href =
+                                        `/order/detail/${response.order_id}`;
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Lỗi: ' + xhr.responseJSON.message);
+                    }
+                });
 
 
             });
