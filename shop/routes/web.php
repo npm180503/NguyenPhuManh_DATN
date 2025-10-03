@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\FrontEnd\LoginController;
 use App\Http\Controllers\Admin\MainAdminController;
 use App\Http\Controllers\Admin\MenuAdminController;
+use App\Http\Controllers\Admin\NewsAdminController;
 use App\Http\Controllers\Admin\ProductAdminController;
 use App\Http\Controllers\Admin\ReviewAdminController;
 use App\Http\Controllers\Admin\SliderController;
@@ -107,6 +108,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('mark-as-canceled/{id}', [OrderAdminController::class, 'markAsCanceled'])->name("admin.order.markAsCanceled");
 
             Route::get('{id}/invoice', [OrderAdminController::class, 'invoicePdf'])->name('admin.order.invoice');
+        });
+
+        Route::prefix('news')->group(function () {
+            Route::get('add', [NewsAdminController::class, 'create'])->name('admin.new.create');
+
         });
     });
 });
