@@ -35,7 +35,6 @@ class Authenticate extends Middleware
      */
     public function handle($request, \Closure $next, ...$guards)
     {
-
         $guards = empty($guards) ? [config('auth.defaults.guard')] : $guards;
 
         foreach ($guards as $guard) {
@@ -47,5 +46,16 @@ class Authenticate extends Middleware
 
         // Nếu không guard nào login, gọi redirectTo
         return $this->unauthenticated($request, $guards);
+    }
+
+    protected function unauthenticated($request, array $guards)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa đăng nhập hoặc phiên đã hết hạn.',
+            ], 401);
+        }
+        return redirect()->guest($this->redirectTo($request));
     }
 }

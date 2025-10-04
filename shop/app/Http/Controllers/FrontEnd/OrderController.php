@@ -74,6 +74,9 @@ class OrderController extends Controller
                 ]);
                 $size = $product->sizes->where('id', $item->size_id)->first();
                 $size->pivot->quantity -= $item->quantity;
+                if ($size->pivot->quantity < 0) {
+                    throw new \Exception("Số lượng sản phẩm trong kho không đủ: " . $product->name . " - Size: " . $size->name);
+                }
                 $size->pivot->save();
             }
             CartItem::where('cart_id', $cart->id)->delete();
