@@ -193,6 +193,7 @@ $(document).ready(function () {
                                 text: "Sản phẩm đã được xóa khỏi giỏ hàng.",
                                 icon: "success"
                             });
+                            location.reload();
                         } else {
                             Swal.fire({
                                 title: "Lỗi!",
