@@ -9,6 +9,7 @@ use App\Http\Services\Review\ReviewAdminService;
 use App\Models\Order;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -30,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $reviewAdminCount = $reviewAdminService->getReviewAdminCount();
         $messageCount = $contactAdminService->getMessageCount();
         $orderCount = Order::where('status', 'pending')->count();
-        
+
         View::composer('*', function ($view) use ($contactAdminService, $messageCount, $reviewAdminService, $reviewAdminCount, $orderCount) {
             $view->with('messageCount', $messageCount);
             $view->with('reviewAdminCount', $reviewAdminCount);
@@ -51,5 +52,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('cartItems', $items)
                 ->with('cartTotal', $total);
         });
+
+        Paginator::useBootstrapFive();
     }
 }

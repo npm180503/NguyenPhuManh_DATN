@@ -53,7 +53,7 @@ class OrderController extends Controller
             }
 
             $order = Order::create([
-                'user_id'          => Auth::id() ?? null,
+                'user_id'          => auth("frontend")->id() ?? null,
                 'order_code'       =>  Str::upper(Str::random(10)),
                 'customer_name'    => $request->name,
                 'customer_phone'   => $request->phone,
@@ -179,7 +179,6 @@ class OrderController extends Controller
     public function myOrders(AboutAdminService $aboutAdminService, MenuService $menuService)
     {
         $user = auth('frontend')->user();
-
         if (!$user) {
             // Nếu chưa login, redirect về login frontend
             return redirect()->route('fr.homepage')->with('error', 'Vui lòng đăng nhập để xem đơn hàng.');
@@ -191,7 +190,7 @@ class OrderController extends Controller
         // Lấy tất cả đơn hàng của user, mới nhất trước
         $orders = \App\Models\Order::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(1);
 
         return view("frontend.order.myOrders", [
             "orders" => $orders,
