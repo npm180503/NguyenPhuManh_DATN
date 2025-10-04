@@ -1,20 +1,47 @@
 @extends('frontend.layout')
 @section('content')
     <style>
+        /* ===== Bảng giỏ hàng gọn gàng ===== */
+        .wrap-table-shopping-cart {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            padding: 20px
+        }
+
+        .table-shopping-cart {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .table-shopping-cart th {
+            background: #f9fafb;
+            color: #444;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: .5px
+        }
+
         .table-shopping-cart th,
         .table-shopping-cart td {
-            padding: 15px;
-            /* Tăng padding để cột rộng hơn */
-            font-size: 16px;
-            /* Tăng kích thước chữ nếu cần */
+            padding: 14px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle
+        }
+
+        .table-shopping-cart tr:hover {
+            background: #fffef8;
+            transition: .25s
         }
 
         .column-1 {
-            width: 15%;
+            width: 15%
         }
 
         .column-2 {
-            width: 30%;
+            width: 30%
         }
 
         .column-3,
@@ -22,63 +49,210 @@
         .column-5,
         .column-6 {
             width: 15%;
-            text-align: center;
+            text-align: center
         }
 
-        .checkout-input input {
+        .how-itemcart1 {
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee
+        }
+
+        .how-itemcart1 img {
             width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
+            height: 100%;
+            object-fit: cover
+        }
+
+        /* ====== FIX NHÓM SỐ LƯỢNG: border/hover khớp tuyệt đối ====== */
+        .wrap-num-product {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            transition: border-color .2s;
+        }
+
+        .wrap-num-product:hover {
+            border-color: #c6a353
+        }
+
+        /* viền vàng khi hover cả nhóm */
+
+        .btn-num-product-down-cart,
+        .btn-num-product-up-cart {
+            background: #f9fafb;
+            border: none;
+            color: #444;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .2s ease;
+            flex: 0 0 38px;
+        }
+
+        .btn-num-product-down-cart:hover,
+        .btn-num-product-up-cart:hover {
+            background: #c6a353;
+            color: #fff
+        }
+
+        .num-product {
+            width: 54px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            color: #111;
+        }
+
+        .num-product:focus {
+            outline: none
+        }
+
+        /* đường ngăn trong nhóm để không “lệch border” khi hover nút */
+        .btn-num-product-down-cart {
+            border-right: 1px solid #e5e7eb
+        }
+
+        .btn-num-product-up-cart {
+            border-left: 1px solid #e5e7eb
+        }
+
+        /* ===== Nút xóa ===== */
+        .btn-remove-cart {
+            background: transparent;
+            border: none;
+            color: #b91c1c;
+            margin-left: 6px;
+            font-size: 16px;
+            transition: .25s
+        }
+
+        .btn-remove-cart:hover {
+            color: #991b1b;
+            transform: scale(1.1)
+        }
+
+        /* ===== Hóa đơn / form ===== */
+        .bor10 {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, .08);
+            border: 1px solid #f2f2f2
+        }
+
+        .mtext-109 {
+            font-weight: 800;
+            font-size: 22px;
+            color: #111
+        }
+
+        .checkout-input input,
+        .checkout-select select {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+            color: #111;
+            transition: all .25s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04)
+        }
+
+        .checkout-input input:hover,
+        .checkout-select select:hover {
+            border-color: #d4af37
+        }
+
+        .checkout-input input:focus,
+        .checkout-select select:focus {
+            outline: none;
+            border-color: #c6a353;
+            box-shadow: 0 0 0 3px rgba(198, 163, 83, .2)
         }
 
         .checkout-select select {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            background: #fff;
-            cursor: pointer;
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, #c6a353 50%), linear-gradient(135deg, #c6a353 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(1.2em + 2px), calc(100% - 15px) calc(1.2em + 2px);
+            background-size: 6px 6px, 6px 6px;
+            background-repeat: no-repeat
         }
 
         .checkout-btn {
             width: 100%;
             padding: 14px;
-            margin-top: 20px;
-            background: #000;
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
+            margin-top: 24px;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4af37, #c6a353, #a9852e);
+            color: #111;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            box-shadow: 0 8px 22px rgba(198, 163, 83, .28);
+            transition: .25s
         }
 
         .checkout-btn:hover {
-            background: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(198, 163, 83, .35)
+        }
+
+
+        /* Giữ tổng tiền + nút X trên CÙNG MỘT DÒNG và canh phải */
+        .table-shopping-cart td.column-6 {
+            text-align: right;
+            white-space: nowrap;
+            /* không cho xuống dòng */
+            vertical-align: middle;
+        }
+
+        /* Tổng tiền cách nút X một chút */
+        .table-shopping-cart td.column-6 .item-total {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        /* Nút X tròn, luôn cân giữa, không bị lệch cao */
+        .btn-remove-cart {
+            display: inline-grid;
+            /* giữ icon ở giữa */
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            line-height: 1;
+            /* tránh kéo cao dòng */
+            border-radius: 50%;
+            margin-left: 2px;
+            /* nhẹ tay, không đẩy xuống */
+            vertical-align: middle;
         }
     </style>
-    <!-- breadcrumb -->
+
     <div class="container" style="margin-top:100px">
         <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-            <a href="{{ route('fr.homepage') }}" class="stext-109 cl8 hov-cl1 trans-04">
-                Trang chủ
+            <a href="{{ route('fr.homepage') }}" class="stext-109 cl8 hov-cl1 trans-04">Trang chủ
                 <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
             </a>
-
-            <span class="stext-109 cl4">
-                Giỏ hàng
-            </span>
+            <span class="stext-109 cl4">Giỏ hàng</span>
         </div>
     </div>
 
-
-    <!-- Shoping Cart -->
     <form class="bg0 p-t-75 p-b-85" action="{{ route('fr.order') }}" method="POST">
         @csrf
         <div class="container">
@@ -107,17 +281,18 @@
                                         <td class="column-3 text-center">{{ $item->size->name }}</td>
                                         <td class="column-4 text-center">
                                             @if ($item->product->price_sale && $item->product->price_sale < $item->product->price)
-                                                <span class="item-price" data-price="{{ $item->product->price_sale }}">
-                                                    {{ number_format($item->product->price_sale) }} VND
-                                                </span>
+                                                <span class="item-price text-danger"
+                                                    data-price="{{ $item->product->price_sale }}">{{ number_format($item->product->price_sale) }}
+                                                    VND</span>
                                             @else
-                                                <span class="item-price" data-price="{{ $item->product->price }}">
-                                                    {{ number_format($item->product->price) }} VND
-                                                </span>
+                                                <span class="item-price"
+                                                    data-price="{{ $item->product->price }}">{{ number_format($item->product->price) }}
+                                                    VND</span>
                                             @endif
                                         </td>
                                         <td class="column-5 text-center">
-                                            <div class="wrap-num-product flex-w m-l-auto m-r-0">
+                                            <!-- NHÓM – 1 + ĐÃ FIX BORDER/HOVER -->
+                                            <div class="wrap-num-product">
                                                 <div class="btn-num-product-down-cart cl8 hov-btn3 trans-04 flex-c-m">
                                                     <i class="fs-16 zmdi zmdi-minus"></i>
                                                 </div>
@@ -130,9 +305,9 @@
                                             </div>
                                         </td>
                                         <td class="column-6 text-center">
-                                            <span class="item-total" id="row-{{ $key }}">
-                                                {{ number_format($item->total()) }}VND
-                                            </span>
+                                            <span class="item-total"
+                                                id="row-{{ $key }}">{{ number_format($item->total()) }}
+                                                VND</span>
                                             <button class="btn-remove-cart" data-url="{{ route('cart.remove', $key) }}"
                                                 data-rowid="{{ $item->id }}">
                                                 <i class="fa-solid fa-xmark"></i>
@@ -142,9 +317,7 @@
                                 @endforeach
                             @else
                                 <tr class="table_head">
-                                    <th class="text-center" colspan="6">
-                                        Bạn chưa có sản phẩm nào trong giỏ hàng
-                                    </th>
+                                    <th class="text-center" colspan="6">Bạn chưa có sản phẩm nào trong giỏ hàng</th>
                                 </tr>
                             @endif
                         </table>
@@ -156,33 +329,23 @@
                     <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm">
                         <h4 class="mtext-109 cl2 p-b-30">Hóa đơn</h4>
                         <div class="flex-w flex-t bor12 p-b-13">
-                            <div class="size-208">
-                                <span class="stext-110 cl2">Tổng:</span>
-                            </div>
-                            <div class="size-209" id="total-amount">
-                                <span class="mtext-110 cl2">{{ number_format($cart->rawTotal()) }} VND</span>
-                            </div>
+                            <div class="size-208"><span class="stext-110 cl2">Tổng:</span></div>
+                            <div class="size-209" id="total-amount"><span
+                                    class="mtext-110 cl2">{{ number_format($cart->rawTotal()) }} VND</span></div>
                         </div>
 
-                        <!-- Thông tin giao hàng -->
                         <div class="p-t-20">
                             <span class="stext-110 cl2">Thông tin giao hàng:</span>
-                            <div class="checkout-input">
-                                <input type="text" id="name" name="name" placeholder="Họ và tên" required>
-                            </div>
-                            <div class="checkout-input">
-                                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" required>
-                            </div>
-                            <div class="checkout-input">
-                                <input type="text" id="address" name="address" placeholder="Địa chỉ giao hàng"
-                                    required>
-                            </div>
-                            <div class="checkout-input">
-                                <input type="text" id="email" name="email" placeholder="Email" required>
-                            </div>
+                            <div class="checkout-input"><input type="text" id="name" name="name"
+                                    placeholder="Họ và tên" required></div>
+                            <div class="checkout-input"><input type="text" id="phone" name="phone"
+                                    placeholder="Số điện thoại" required></div>
+                            <div class="checkout-input"><input type="text" id="address" name="address"
+                                    placeholder="Địa chỉ giao hàng" required></div>
+                            <div class="checkout-input"><input type="text" id="email" name="email"
+                                    placeholder="Email" required></div>
                         </div>
 
-                        <!-- Chọn hình thức thanh toán -->
                         <div class="p-t-15">
                             <span class="stext-112 cl2">Chọn hình thức thanh toán:</span>
                             <div class="checkout-select">
@@ -193,22 +356,13 @@
                             </div>
                         </div>
 
-                        <!-- Nút đặt hàng -->
-                        <button class="checkout-btn">ĐẶT HÀNG</button>
+                        <button class="checkout-btn">Đặt hàng</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </form>
 
-
-    <!-- Back to top -->
-    <div class="btn-back-to-top" id="myBtn">
-        <span class="symbol-btn-back-to-top">
-            <i class="zmdi zmdi-chevron-up"></i>
-        </span>
-    </div>
     <script>
         $(document).ready(function() {
             var processing = false;
