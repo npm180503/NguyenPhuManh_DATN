@@ -42,12 +42,12 @@ class Cart
         if ($quantity <= 0) throw new Exception("Quantity Invalid");
         if ($product->sizes->isEmpty()) throw new Exception("Product Size Not Found");
         if ($product->sizes->where('id', $sizeId)->isEmpty()) throw new Exception("Product Size Not Found");
-        if ($product->sizes->where('id', $sizeId)->first()->pivot->quantity < $quantity) {
-            throw new Exception("Số lượng  sản phẩm trong kho không đủ");
-        }
         $keyItem = $this->hashKey($productId, $sizeId);
         if (!empty($this->cartItems)) {
             if (!empty($this->cartItems[$keyItem])) {
+                if ($product->sizes->where('id', $sizeId)->first()->pivot->quantity < $quantity + $this->cartItems[$keyItem]->quantity) {
+                    throw new Exception("Số lượng  sản phẩm trong kho không đủ");
+                }
                 $this->cartItems[$keyItem]->increase($quantity);
             } else {
                 $cartItem = new CartItem($productId, $sizeId, $quantity);
