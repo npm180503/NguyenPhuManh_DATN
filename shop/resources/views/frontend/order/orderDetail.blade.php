@@ -315,7 +315,7 @@
             @endif
 
             {{-- STATUS STEPPER --}}
-            @php
+            {{-- @php
                 $steps = [
                     'pending' => 'Chờ duyệt',
                     'processing' => 'Chuẩn bị',
@@ -352,7 +352,7 @@
                     <div class="lbl">Hoàn tất</div>
                     <div class="sub">Giao thành công</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- GRID --}}
             <div class="row g-4">
