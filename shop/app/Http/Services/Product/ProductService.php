@@ -7,23 +7,32 @@ use App\Http\Enums\EnumStatus;
 use App\Models\Product;
 use App\Models\Size;
 use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProductService
 {
+    public Builder $product;
+
     const LIMIT = 16;
+
+    public function __construct()
+    {
+        $this->product = Product::query();
+    }
 
     public function getAll()
     {
         return Product::all(); // Lấy tất cả sản phẩm từ cơ sở dữ liệu.
     }
 
-    public function getByMenus(array $menuIds) {
+    public function getByMenus(array $menuIds)
+    {
         return Product::whereIn('menu_id', $menuIds)->get();
     }
-    
+
 
     public function get(int $page = 1)
     {
@@ -37,13 +46,13 @@ class ProductService
     }
 
     public function getWithPagition(array $conditions, int $limit = 10, int $page = 1): LengthAwarePaginator
-    {   
+    {
         $query = Product::query();
-        if(!empty($conditions["name"])){
-            $query->where("name", "LIKE", $conditions["name"]."%");
+        if (!empty($conditions["name"])) {
+            $query->where("name", "LIKE", $conditions["name"] . "%");
         }
         $query->orderByDesc('created_at');
-        return $query->paginate($limit, page:$page);
+        return $query->paginate($limit, page: $page);
     }
 
     public function show($id, array $relationShips = [])
@@ -54,10 +63,15 @@ class ProductService
             ->firstOrFail();
     }
 
+    public function product(int $productId)
+    {
+        return $this->product->where('id', $productId)->with('sizes')->first();
+    }
+
     public function store(array $data): Product|bool
     {
         DB::beginTransaction();
-        try{
+        try {
             $product = Product::create([
                 'name' => $data["name"] ?? "",
                 'description' => $data["description"] ?? "",
@@ -68,17 +82,17 @@ class ProductService
                 'thumb' => $data["thumbPath"] ?? "",
                 'active' => $data["active"] ?? "",
             ]);
-            if(!empty($data["sizes"])){
-                
+            if (!empty($data["sizes"])) {
+
                 $syncData = [];
-                foreach($data["sizes"] as $dataSize){
+                foreach ($data["sizes"] as $dataSize) {
                     $syncData[$dataSize["size"]] = ["quantity" => $dataSize["quantity"]];
                 }
                 $product->sizes()->sync($syncData);
             }
             DB::commit();
             return $product;
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
             throw $e;
@@ -99,7 +113,7 @@ class ProductService
     {
         try {
             $data = $request->except('_token', '_method', 'sizes');
-            
+
             // Nếu không có thumb mới, giữ lại thumb cũ
             if (!isset($data['thumb'])) {
                 $data['thumb'] = $product->thumb;
@@ -107,7 +121,7 @@ class ProductService
 
             $product->fill($data);
             $product->save();
-            
+
             return true;
         } catch (\Exception $err) {
             Log::error('Error Update Product: ' . $err->getMessage());

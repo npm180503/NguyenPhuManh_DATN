@@ -27,7 +27,7 @@ class ProductAdminService
             $data = array_merge(
                 $request->all(),
                 ['thumb' => $thumbPath]
-            );   
+            );
             Product::create($data);
             Session::flash('success', 'Thêm Sản phẩm thành công');
         } catch (\Exception $err) {
@@ -50,7 +50,7 @@ class ProductAdminService
         try {
             Log::info('Uploading product with data: ', $request->all());
             $product->fill($request->input());
-            if($request->has('thumb')){
+            if ($request->has('thumb')) {
                 $product->thumb = $request->input('thumb');
             }
             $product->save();
@@ -67,10 +67,10 @@ class ProductAdminService
 
     public function destroy($request)
     {
-        try{
+        try {
             $product = Product::find($request->input('id'));
-            if($product){
-                if($product->thumb && file_exists(storage_path('app/public/' . $product->thumb))){
+            if ($product) {
+                if ($product->thumb && file_exists(storage_path('app/public/' . $product->thumb))) {
                     unlink(storage_path('app/public/' . $product->thumb));
                 }
                 $product->sizes()->detach();
@@ -78,20 +78,21 @@ class ProductAdminService
                 return true;
             }
             return false;
-        }catch(\Exception $err){
+        } catch (\Exception $err) {
             Log::error('Lỗi xóa sản phẩm: ' . $err->getMessage());
             return false;
         }
     }
 
-    protected function uploadThumb($request){
-        if($request->hasFile('thumb')){
-            try{
+    protected function uploadThumb($request)
+    {
+        if ($request->hasFile('thumb')) {
+            try {
                 $name = $request->file('thumb')->getClientOriginalName();
                 $pathFull = 'uploads/products/' . date("Y/m/d");
                 $request->file('thumb')->storeAs('public/' . $pathFull, $name);
                 return $pathFull . '/' . $name;
-            }catch(\Exception $error){
+            } catch (\Exception $error) {
                 return false;
             }
         }

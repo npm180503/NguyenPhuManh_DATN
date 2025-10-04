@@ -6,6 +6,7 @@ namespace App\Http\Controllers\FrontEnd;
 use App\Http\Controllers\Controller;
 use App\Http\Services\About\AboutAdminService;
 use App\Http\Services\Menu\MenuService;
+use App\Http\Services\Product\ProductService;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -13,9 +14,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Cart;
 use App\Models\CartItem;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use App\Mail\OrderInvoiceMail;
+use App\Models\ProductImage;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -63,6 +64,7 @@ class OrderController extends Controller
                 'payment_method'   => $request->payment_method,
             ]);
             foreach ($cartItems as $item) {
+                $product = resolve(ProductService::class)->product($item->product_id);
                 OrderItem::create([
                     'order_id'   => $order->id,
                     'product_id' => $item->product->id,
@@ -70,8 +72,10 @@ class OrderController extends Controller
                     'size_id'    => $item->size_id,
                     'price'      => $item->product->price_sale ?? $item->product->price,
                 ]);
+                $size = $product->sizes->where('id', $item->size_id)->first();
+                $size->pivot->quantity -= $item->quantity;
+                $size->pivot->save();
             }
-            // Xóa giỏ hàng
             CartItem::where('cart_id', $cart->id)->delete();
             $cart->delete();
         });

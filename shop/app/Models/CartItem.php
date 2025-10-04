@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class CartItem extends Model
 {
     protected $fillable = [
-    'cart_id',
-    'product_id',
-    'size_id',
-    'quantity',
-    'price',
-];
+        'cart_id',
+        'product_id',
+        'size_id',
+        'quantity',
+        'price',
+    ];
 
 
     public function cart()
@@ -26,7 +26,7 @@ class CartItem extends Model
     }
 
     public function size()
-{
-    return $this->belongsTo(Size::class, 'size_id');
-}
+    {
+        return $this->belongsTo(Size::class, 'size_id');
+    }
 }

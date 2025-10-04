@@ -12,6 +12,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Services\Menu\MenuService;
 use App\Http\Services\About\AboutAdminService;
+use Illuminate\Support\Facades\Log;
+
 class CartController extends Controller
 {
     // public function addToCart(Request $request)
@@ -78,41 +80,29 @@ class CartController extends Controller
     //     ]);
     // }
 
+    /**
+     * @throws \Exception
+     */
     public function add(Request $request, $productId)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
             'size_id' => 'required|exists:sizes,id',
         ]);
-
-        $user = auth('frontend')->user();
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-
-        $item = $cart->items()
-            ->where('product_id', $productId)
-            ->where('size_id', $request->size_id)
-            ->first();
-
-        if ($item) {
-            $item->increment('quantity', $request->quantity);
-        } else {
-            $product = Product::findOrFail($productId);
-            $finalPrice = $product->price_sale > 0 ? $product->price_sale : $product->price;
-            $cart->items()->create([
-                'product_id' => $productId,
-                'size_id' => $request->size_id,
-                'quantity' => $request->quantity,
-                'price' => $finalPrice,
+        try {
+            $cart = \App\Http\Business\Cart::getInstance(auth("frontend")->id());
+            $cart->addToCart($productId, $request->get('size_id'), $request->get('quantity'));
+            return response()->json([
+                'message' => 'Sản phẩm đã thêm vào giỏ',
+                'html' => view('components.cart-v2-component', compact('cart'))->render(),
             ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi thêm vào giỏ hàng: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Thêm vào giỏ hàng thất bại: ' . $e->getMessage(),
+            ], 400);
         }
-        $cart = BusinessCart::getInstance(auth('frontend')->id());
-        return response()->json([
-            'message' => 'Sản phẩm đã thêm vào giỏ',
-            'html' => view('components.cart-component', compact('cart'))->render(),
-            // 'cart_count' => $cart->items()->count()
-        ]);
     }
-
 
     public function index()
     {
@@ -120,7 +110,6 @@ class CartController extends Controller
         $cart = Cart::where('user_id', $user->id)
             ->with('items.product') // load cả items + product
             ->first();
-
         return view('frontend.cart.cartDetail', compact('cart'));
     }
 
@@ -153,86 +142,52 @@ class CartController extends Controller
 
     public function cartDetail(MenuService $menuService, AboutAdminService $aboutAdminService)
     {
-                $menus = $menuService->getParent();
+        $menus = $menuService->getParent();
         $abouts = $aboutAdminService->get();
-        $cart = Cart::where('user_id', auth('frontend')->id())
-            ->with('items.product')
-            ->first();
-
-        if (!$cart) {
+        $cart = \App\Http\Business\Cart::getInstance(auth("frontend")->id());
+        if (empty($cart->content())) {
             return view('frontend.cart.cartDetail', [
                 'title' => 'Giới thiệu',
                 'menus' => $menus,
-            'abouts' => $abouts,
+                'abouts' => $abouts,
                 'cartItems' => collect(),
                 'cartTotal' => 0,
             ]);
         }
-
-        $cartItems = $cart->items;
-
-        $cartTotal = $cartItems->sum(function ($item) {
-            if (!$item->product) return 0;
-            $price = $item->product->price_sale ?? $item->product->price;
-            return $price * $item->quantity;
-        });
         $menus = $menuService->getParent();
         $title = 'Giỏ hàng của tôi';
-        return view('frontend.cart.cartDetail', compact('cartItems', 'cartTotal', 'title', 'menus'));
+        return view('frontend.cart.cart_detail', compact('cart', 'title', 'menus'));
     }
 
-    public function update($itemId)
+    public function update(string $itemId)
     {
+        $cart = \App\Http\Business\Cart::getInstance(auth("frontend")->id());
         $quantity = request()->get("quantity");
-        $cart = Cart::where('user_id', auth('frontend')->id())->first();
-        $item = CartItem::where('product_id', $itemId)->where('cart_id',  $cart->id)->first();
-        if ($item) {
-            $item->update([
-                "quantity" => $quantity
-            ]);
-            $item->refresh();
-            $cartTotal = $cart->items->sum(function ($cartItem) {
-                return $cartItem->quantity * $cartItem->price;
-            });
+        try {
+            $item = $cart->updateCart($itemId, $quantity);
             return response()->json([
                 'success' => true,
-                'amount' => number_format($item->quantity * $item->price) . " VND",
-                'total_amount' => number_format($cartTotal) . " VND",
-                'message' => ''
+                'amount' => number_format($item->total()) . " VND",
+                'total_amount' => number_format($cart->rawTotal()) . " VND",
+                'message' => 'Cập nhật giỏ hàng thành công'
             ]);
-        } else {
+        } catch (\Exception $e) {
+            Log::error('Lỗi cập nhật giỏ hàng: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Không tìm thấy sản phẩm trong giỏ hàng'
+                'message' => 'Cập nhật giỏ hàng thất bại: '
             ]);
         }
-
-        return redirect()->route('cart.detail');
     }
 
     public function remove($itemId)
     {
-        $cart = Cart::where('user_id', auth('frontend')->id())->first();
-        CartItem::where('id', $itemId)->where('cart_id', $cart->id)->delete();
-
-        // Sau khi xóa, tính lại tổng giỏ hàng
-        $cartItems = CartItem::with('product', 'size')
-            ->where('cart_id', $cart->id)
-            ->get();
-
-        $cartTotal = $cartItems->sum(function ($item) {
-            $price = $item->product->price_sale && $item->product->price_sale < $item->product->price
-                ? $item->product->price_sale
-                : $item->product->price;
-            return $price * $item->quantity;
-        });
-
+        $cart = \App\Http\Business\Cart::getInstance(auth("frontend")->id());
+        $cart->removeCart($itemId);
         $cart = BusinessCart::getInstance(auth('frontend')->id());
         return response()->json([
             'success' => true,
-            'html' => view('components.cart-component', compact('cart'))->render(),
-            'cart_count' => $cartItems->count(),
-            'cart_total' => number_format($cartTotal),
+            'html' => view('components.cart-v2-component', compact('cart'))->render()
         ]);
     }
 }

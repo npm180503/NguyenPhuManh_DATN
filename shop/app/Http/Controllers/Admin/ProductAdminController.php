@@ -52,7 +52,7 @@ class ProductAdminController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-    
+
         try {
             // Upload ảnh đại diện (thumb)
             $fileUploaded = app(UploadService::class)->store($request, "thumb");
@@ -66,7 +66,7 @@ class ProductAdminController extends Controller
             // Lưu size và số lượng
             if ($request->has('sizes')) {
                 foreach ($request->sizes as $sizeId => $sizeData) {
-                    if (isset($sizeData['active'])) {       
+                    if (isset($sizeData['active'])) {
                         $product->sizes()->attach($sizeId, [
                             'quantity' => $sizeData['quantity'] ?? 0
                         ]);
@@ -114,77 +114,76 @@ class ProductAdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-public function update(Product $product, UpdateProductRequest $request)
-{
-    try {
-        $thumb = $product->thumb; // giữ ảnh chính cũ
-        $product->load(['sizes', 'images']);
+    public function update(Product $product, UpdateProductRequest $request)
+    {
+        try {
+            $thumb = $product->thumb; // giữ ảnh chính cũ
+            $product->load(['sizes', 'images']);
 
-        // xử lý ảnh chính (thumb)
-        if ($request->hasFile('thumb')) {
-            $fileUploaded = app(UploadService::class)->store($request, "thumb");
+            // xử lý ảnh chính (thumb)
+            if ($request->hasFile('thumb')) {
+                $fileUploaded = app(UploadService::class)->store($request, "thumb");
 
-            if ($fileUploaded["error"]) {
-                throw new \Exception('Không thể upload file');
+                if ($fileUploaded["error"]) {
+                    throw new \Exception('Không thể upload file');
+                }
+
+                $thumb = $fileUploaded["url"];
             }
 
-            $thumb = $fileUploaded["url"];
-        }
+            // merge thumb vào request
+            $request->merge(['thumb' => $thumb]);
 
-        // merge thumb vào request
-        $request->merge(['thumb' => $thumb]);
+            // cập nhật sản phẩm
+            $this->productService->update($request, $product);
 
-        // cập nhật sản phẩm
-        $this->productService->update($request, $product);
-
-        // ================== Xử lý sizes ==================
-        if ($request->has('sizes')) {
-            $product->sizes()->detach();
-            foreach ($request->sizes as $sizeId => $sizeData) {
-                if (isset($sizeData['active']) && $sizeData['active']) {
-                    $product->sizes()->attach($sizeId, [
-                        'quantity' => $sizeData['quantity'] ?? 0
-                    ]);
+            // ================== Xử lý sizes ==================
+            if ($request->has('sizes')) {
+                $product->sizes()->detach();
+                foreach ($request->sizes as $sizeId => $sizeData) {
+                    if (isset($sizeData['active']) && $sizeData['active']) {
+                        $product->sizes()->attach($sizeId, [
+                            'quantity' => $sizeData['quantity'] ?? 0
+                        ]);
+                    }
                 }
             }
-        }
 
-        // ================== Xử lý ảnh phụ ==================
-if ($request->has('delete_images')) {
-    foreach ($request->delete_images as $imageId) {
-        $image = $product->images()->find($imageId);
-        if ($image) {
-            // Xoá file vật lý nếu có
-            $filePath = public_path($image->image_path);
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            // ================== Xử lý ảnh phụ ==================
+            if ($request->has('delete_images')) {
+                foreach ($request->delete_images as $imageId) {
+                    $image = $product->images()->find($imageId);
+                    if ($image) {
+                        // Xoá file vật lý nếu có
+                        $filePath = public_path($image->image_path);
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                        $image->delete();
+                    }
+                }
             }
-            $image->delete();
+
+            // Nếu có ảnh mới thì thêm vào
+            if ($request->hasFile('images')) {
+                $filesUploaded = app(UploadService::class)->storeMultiple($request, "images", "products");
+                if (!$filesUploaded["error"]) {
+                    foreach ($filesUploaded["urls"] as $url) {
+                        $product->images()->create([
+                            'image_path' => $url,
+                        ]);
+                    }
+                }
+            }
+
+
+            Session::flash('success', 'Cập nhật sản phẩm thành công');
+            return redirect('/admin/products/list');
+        } catch (\Exception $err) {
+            Session::flash('error', 'Cập nhật sản phẩm thất bại: ' . $err->getMessage());
+            return redirect()->back();
         }
     }
-}
-
-// Nếu có ảnh mới thì thêm vào
-if ($request->hasFile('images')) {
-    $filesUploaded = app(UploadService::class)->storeMultiple($request, "images", "products");
-    if (!$filesUploaded["error"]) {
-        foreach ($filesUploaded["urls"] as $url) {
-            $product->images()->create([
-                'image_path' => $url,
-            ]);
-        }
-    }
-}
-
-
-        Session::flash('success', 'Cập nhật sản phẩm thành công');
-        return redirect('/admin/products/list');
-
-    } catch (\Exception $err) {
-        Session::flash('error', 'Cập nhật sản phẩm thất bại: ' . $err->getMessage());
-        return redirect()->back();
-    }
-}
 
 
     /**

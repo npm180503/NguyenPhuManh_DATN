@@ -42,8 +42,8 @@
 </style>
 <div>
     <div
-        @class(['icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-cart', 'icon-header-noti' => $cartItems->count() > 0])
-        @if ($cartItems->count() > 0) data-notify="{{ $cartItems->count() }}" @endif>
+        @class(['icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-cart', 'icon-header-noti' => !empty($cart->content())])
+        @if (!empty($cart->content())) data-notify="{{ count($cart->content()) }}" @endif>
         <i class="zmdi zmdi-shopping-cart"></i>
     </div>
     <div class="wrap-header-cart js-panel-cart">
@@ -58,13 +58,12 @@
             <div class="header-cart-content flex-w js-pscroll">
                 <ul class="header-cart-wrapitem w-full" id="cart-items">
                     @if (auth('frontend')->check())
-                        @if ($cartItems->count() > 0)
-                            @foreach ($cartItems as $item)
+                        @if (!empty($cart->content()))
+                            @foreach ($cart->content() as $key => $item)
                                 <li class="header-cart-item flex-w flex-t m-b-12">
                                     <div class="header-cart-item-img">
                                         <img src="{{ $item->product->thumb ?? asset('images/no-image.png') }}"
                                             alt="IMG">
-
                                     </div>
                                     <div class="header-cart-item-txt p-t-8 flex-grow-1">
                                         <div class="header-cart-item-row">
@@ -74,22 +73,15 @@
 
                                             </a>
                                             <button class="btn-remove-cart"
-                                                data-url="{{ route('cart.remove', $item->id) }}"
-                                                data-rowid="{{ $item->id }}">
+                                                data-url="{{ route('cart.remove', $key) }}"
+                                                data-rowid="{{ $key }}">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
                                         <span class="header-cart-item-info">
                                             {{ $item->quantity }} x
                                             @if ($item->product)
-                                                @if ($item->product->price_sale && $item->product->price_sale < $item->product->price)
-                                                    <span
-                                                        class="price_sale">{{ number_format($item->product->price_sale) }}
-                                                        VND</span>
-                                                @else
-                                                    <span class="price">{{ number_format($item->product->price) }}
-                                                        VND</span>
-                                                @endif
+                                                <span class="price">{{ number_format($item->price) }} VND</span>
                                             @else
                                                 <span class="text-danger">Sản phẩm không tồn tại</span>
                                             @endif
@@ -124,7 +116,7 @@
 
                 <div class="w-full">
                     <div class="header-cart-total w-full p-tb-40">
-                        Tổng: <span id="cart-total">{{ number_format($cartTotal) }} VND</span>
+                        Tổng: <span id="cart-total">{{ $cart->total() }} VND</span>
                     </div>
                     <a href="{{ route('cart.detail') }}"
                         class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10">
