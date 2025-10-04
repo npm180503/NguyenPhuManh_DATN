@@ -175,8 +175,8 @@ class CartController extends Controller
             Log::error('Lỗi cập nhật giỏ hàng: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Cập nhật giỏ hàng thất bại: '
-            ]);
+                'message' => 'Cập nhật giỏ hàng thất bại: ' . $e->getMessage(),
+            ], 400);
         }
     }
 

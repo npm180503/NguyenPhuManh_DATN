@@ -65,6 +65,14 @@ class Cart
     {
         if (empty($this->cartItems[$rowId])) throw new Exception("Cart Item Not Found");
         $item = $this->cartItems[$rowId];
+        $product = resolve(ProductService::class)->product($item->productId);
+        if (empty($product)) throw new Exception("Product Not Found");
+        if ($quantity <= 0) throw new Exception("Quantity Invalid");
+        if ($product->sizes->isEmpty()) throw new Exception("Product Size Not Found");
+        if ($product->sizes->where('id', $item->sizeId)->isEmpty()) throw new Exception("Product Size Not Found");
+        if ($product->sizes->where('id', $item->sizeId)->first()->pivot->quantity < $quantity) {
+            throw new Exception("Số lượng  sản phẩm trong kho không đủ");
+        }
         $item->updateQuantity($quantity);
         return $item;
     }

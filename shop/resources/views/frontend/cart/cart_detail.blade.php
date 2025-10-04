@@ -222,7 +222,6 @@
                 let newValue = parseInt(input.val()) + ($(this).hasClass('btn-num-product-up-cart') ? 1 : -
                     1);
                 newValue = Math.max(1, newValue);
-                input.val(newValue);
                 let itemId = input.data('item-id');
                 let url = "{{ url('cart/update') }}/" + itemId;
 
@@ -236,6 +235,7 @@
                     success: function(res) {
                         $(`#row-${itemId}`).html(res.amount);
                         $('#total-amount span').text(res.total_amount);
+                        input.val(newValue);
                     },
                     error: function(xhr) {
                         console.log(xhr);
@@ -249,10 +249,10 @@
         $(document).ready(function() {
             $(document).on("change", ".num-product", function() {
                 let input = $(this);
+                let oldValue = parseInt($(this).val()) || 1;
                 let newValue = parseInt(input.val());
                 if (isNaN(newValue) || newValue < 1) {
                     newValue = 1;
-                    input.val(newValue);
                 }
 
                 let itemId = input.data("item-id");
@@ -268,8 +268,10 @@
                     success: function(res) {
                         $(`#row-${itemId}`).html(res.amount);
                         $("#total-amount span").text(res.total_amount);
+                        input.val(newValue);
                     },
                     error: function(xhr) {
+                        console.log(oldValue);
                         console.log(xhr);
                     }
                 });
