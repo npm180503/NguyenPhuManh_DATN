@@ -10,7 +10,7 @@
     <div class="bg-white/10 backdrop-blur-lg shadow-2xl rounded-3xl p-8 w-full max-w-md border border-white/20">
         <div class="text-center mb-8">
             <div class="flex justify-center mb-4">
-                <img src="/images/logo-shoe.png" alt="PMSTORE" class="w-16 h-16 rounded-full shadow-lg">
+                <img src="/template/admin/dist/img/download.jpg" alt="PMSTORE" class="w-16 h-16 rounded-full shadow-lg">
             </div>
             <h1 class="text-3xl font-extrabold text-white tracking-wide">PMSTORE</h1>
             <p class="text-gray-300 text-sm mt-2">Đăng nhập để tiếp tục hành trình của bạn</p>
