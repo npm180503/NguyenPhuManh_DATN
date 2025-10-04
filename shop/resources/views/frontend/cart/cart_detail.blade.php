@@ -252,9 +252,13 @@
         });
 
         $(document).ready(function() {
+            $(document).on("focusin", ".num-product", function() {
+                $(this).data("old-value", $(this).val());
+            });
+
             $(document).on("change", ".num-product", function() {
                 let input = $(this);
-                let oldValue = parseInt($(this).val()) || 1;
+                let oldValue = parseInt(input.data("old-value")) || 1; // giá trị cũ
                 let newValue = parseInt(input.val());
                 if (isNaN(newValue) || newValue < 1) {
                     newValue = 1;
@@ -282,6 +286,7 @@
                             text: xhr.responseJSON?.message ??
                                 'Không thể cập nhật số lượng sản phẩm.',
                         });
+                        input.val(oldValue);
                     }
                 });
             });
