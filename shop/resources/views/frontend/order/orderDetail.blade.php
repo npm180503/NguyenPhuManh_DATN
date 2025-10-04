@@ -272,6 +272,19 @@
             border-radius: 12px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, .12)
         }
+
+        /* ... các CSS khác ... */
+        .chip-canceled,
+        .chip-cancle {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        .dot-canceled,
+        .dot-cancle {
+            background: #f87171;
+        }
     </style>
 
     <div class="container py-5 mt-4">
@@ -308,6 +321,7 @@
                     'processing' => 'Chuẩn bị',
                     'shipped' => 'Đang giao',
                     'completed' => 'Hoàn tất',
+                    'canceled' => 'Đã hủy',
                 ];
                 $orderStep = match ($order->status) {
                     'pending' => 1,

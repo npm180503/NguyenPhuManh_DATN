@@ -1,5 +1,3 @@
-
-
 <!-- Footer -->
 <!-- Footer -->
 <footer class="bg3 p-t-50 p-b-20">
@@ -9,10 +7,10 @@
             <div class="col-sm-6 col-lg-3 p-b-30">
                 <h4 class="stext-301 cl0 p-b-20">Danh Mục</h4>
                 <ul>
-                    @foreach($menus as $menu)
-                    <li class="p-b-5">
-                        <a href="#" class="stext-104 cl7 hov-cl1 trans-04">{{ $menu->name }}</a>
-                    </li>
+                    @foreach ($menus as $menu)
+                        <li class="p-b-5">
+                            <a href="#" class="stext-104 cl7 hov-cl1 trans-04">{{ $menu->name }}</a>
+                        </li>
                     @endforeach
                 </ul>
             </div>
@@ -35,10 +33,12 @@
                     Mọi thắc mắc, xin vui lòng đến cửa hàng tại 201/45 Đ.Cầu Giấy hoặc qua hotline: 0123456789
                 </p>
                 <div class="p-t-15">
-                    <a href="https://www.facebook.com/nguyen.manh.670379" class="fs-18 cl7 hov-cl1 trans-04 m-r-10" target="_blank">
+                    <a href="https://www.facebook.com/nguyen.manh.670379" class="fs-18 cl7 hov-cl1 trans-04 m-r-10"
+                        target="_blank">
                         <i class="fa-brands fa-facebook"></i>
                     </a>
-                    <a href="https://www.instagram.com/_18flyn_/" class="fs-18 cl7 hov-cl1 trans-04 m-r-10" target="_blank">
+                    <a href="https://www.instagram.com/_18flyn_/" class="fs-18 cl7 hov-cl1 trans-04 m-r-10"
+                        target="_blank">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
                 </div>
@@ -65,88 +65,90 @@
 </footer>
 <style>
     footer.bg3 {
-    background-color: #222; /* nền đậm */
-    color: #ccc;
-    font-size: 14px;
-}
+        background-color: #222;
+        /* nền đậm */
+        color: #ccc;
+        font-size: 14px;
+    }
 
-footer h4 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #fff;
-    text-transform: uppercase;
-    position: relative;
-    display: inline-block;
-}
+    footer h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #fff;
+        text-transform: uppercase;
+        position: relative;
+        display: inline-block;
+    }
 
-footer h4::after {
-    content: "";
-    display: block;
-    width: 40px;
-    height: 2px;
-    background: #f44336; /* gạch đỏ dưới tiêu đề */
-    margin-top: 8px;
-}
+    footer h4::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: #f44336;
+        /* gạch đỏ dưới tiêu đề */
+        margin-top: 8px;
+    }
 
-footer ul {
-    list-style: none;
-    padding-left: 0;
-}
+    footer ul {
+        list-style: none;
+        padding-left: 0;
+    }
 
-footer ul li a {
-    color: #bbb;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+    footer ul li a {
+        color: #bbb;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
 
-footer ul li a:hover {
-    color: #f44336; /* đổi màu khi hover */
-    padding-left: 5px;
-}
+    footer ul li a:hover {
+        color: #f44336;
+        /* đổi màu khi hover */
+        padding-left: 5px;
+    }
 
-footer p {
-    color: #aaa;
-    line-height: 1.6;
-}
+    footer p {
+        color: #aaa;
+        line-height: 1.6;
+    }
 
-footer .fa-brands {
-    font-size: 20px;
-    transition: 0.3s;
-}
+    footer .fa-brands {
+        font-size: 20px;
+        transition: 0.3s;
+    }
 
-footer .fa-brands:hover {
-    color: #f44336;
-    transform: scale(1.2);
-}
+    footer .fa-brands:hover {
+        color: #f44336;
+        transform: scale(1.2);
+    }
 
-footer img {
-    max-width: 100%;
-    height: auto;
-    transition: transform 0.3s;
-}
+    footer img {
+        max-width: 100%;
+        height: auto;
+        transition: transform 0.3s;
+    }
 
-footer img:hover {
-    transform: scale(1.05);
-}
+    footer img:hover {
+        transform: scale(1.05);
+    }
 
-footer .border-top {
-    border-color: rgba(255, 255, 255, 0.1) !important;
-}
+    footer .border-top {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
 
-footer .stext-107 {
-    font-size: 13px;
-    color: #888;
-}
-
+    footer .stext-107 {
+        font-size: 13px;
+        color: #888;
+    }
 </style>
 
 
 <!-- Back to top -->
 <div class="btn-back-to-top" id="myBtn">
-		<span class="symbol-btn-back-to-top">
-			<i class="zmdi zmdi-chevron-up"></i>
-		</span>
+    <span class="symbol-btn-back-to-top">
+        <i class="zmdi zmdi-chevron-up"></i>
+    </span>
 </div>
 
 <!--===============================================================================================-->
@@ -159,7 +161,7 @@ footer .stext-107 {
 <!--===============================================================================================-->
 <script src="/template/vendor/select2/select2.min.js"></script>
 <script>
-    $(".js-select2").each(function(){
+    $(".js-select2").each(function() {
         $(this).select2({
             minimumResultsForSearch: 20,
             dropdownParent: $(this).next('.dropDownSelect2')
@@ -185,7 +187,7 @@ footer .stext-107 {
             delegate: 'a', // the selector for gallery item
             type: 'image',
             gallery: {
-                enabled:true
+                enabled: true
             },
             mainClass: 'mfp-fade'
         });
@@ -196,13 +198,13 @@ footer .stext-107 {
 <!--===============================================================================================-->
 <script src="/template/vendor/sweetalert/sweetalert.min.js"></script>
 <script>
-    $('.js-addwish-b2').on('click', function(e){
+    $('.js-addwish-b2').on('click', function(e) {
         e.preventDefault();
     });
 
-    $('.js-addwish-b2').each(function(){
+    $('.js-addwish-b2').each(function() {
         var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
-        $(this).on('click', function(){
+        $(this).on('click', function() {
             swal(nameProduct, "is added to wishlist !", "success");
 
             $(this).addClass('js-addedwish-b2');
@@ -210,10 +212,10 @@ footer .stext-107 {
         });
     });
 
-    $('.js-addwish-detail').each(function(){
+    $('.js-addwish-detail').each(function() {
         var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
 
-        $(this).on('click', function(){
+        $(this).on('click', function() {
             swal(nameProduct, "is added to wishlist !", "success");
 
             $(this).addClass('js-addedwish-detail');
@@ -229,27 +231,24 @@ footer .stext-107 {
     //         swal(nameProduct, "is added to cart !", "success");
     //     });
     // });
-
 </script>
 <!--===============================================================================================-->
 <script src="/template/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script>
-    $('.js-pscroll').each(function(){
-        $(this).css('position','relative');
-        $(this).css('overflow','hidden');
+    $('.js-pscroll').each(function() {
+        $(this).css('position', 'relative');
+        $(this).css('overflow', 'hidden');
         var ps = new PerfectScrollbar(this, {
             wheelSpeed: 1,
             scrollingThreshold: 1000,
             wheelPropagation: false,
         });
 
-        $(window).on('resize', function(){
+        $(window).on('resize', function() {
             ps.update();
         })
     });
 </script>
 <!--===============================================================================================-->
 <script src="/template/js/main.js?v={{ time() }}"></script>
-<script src="/template/js/public.js"></script>
-
-
+<script src="/template/js/product.js"></script>

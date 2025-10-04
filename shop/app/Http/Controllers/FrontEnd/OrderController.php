@@ -190,7 +190,7 @@ class OrderController extends Controller
         // Lấy tất cả đơn hàng của user, mới nhất trước
         $orders = \App\Models\Order::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->paginate(1);
+            ->paginate(10);
 
         return view("frontend.order.myOrders", [
             "orders" => $orders,
