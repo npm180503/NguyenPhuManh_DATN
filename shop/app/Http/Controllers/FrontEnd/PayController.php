@@ -93,8 +93,8 @@ class PayController extends Controller
         if (isset($jsonResult['payUrl'])) {
             return redirect()->away($jsonResult['payUrl']);
         } else {
-            
-            dd($jsonResult);
+            abort(404);
+            // dd($jsonResult);
             // debug lỗi nếu MoMo trả về error
             // dd($jsonResult);
         }

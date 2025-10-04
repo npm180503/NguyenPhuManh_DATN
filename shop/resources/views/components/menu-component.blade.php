@@ -1,160 +1,174 @@
 <style>
-    .main-menu li.active a {
-        color: #ff6600;
-        /* Màu cam */
-        font-weight: bold;
-        border-bottom: 2px solid #ff6600;
-        /* Gạch chân */
-    }
+/* ===== Header & Menu ===== */
+header {
+    position: relative;
+    z-index: 1000;
+}
 
-    .active {
-        font-weight: bold;
-        /* Hoặc bất kỳ kiểu dáng nào bạn muốn */
-        color: #ff6347
-            /* Màu sắc cho mục đang được chọn */
-    }
+.main-menu li a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
 
-    .notification-dropdown {
-        position: absolute;
-        top: 60px;
-        right: 10px;
-        width: 320px;
-        background: #fff;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-        border-radius: 10px;
-        display: none;
-        z-index: 1000;
-        overflow: hidden;
-        animation: fadeIn 0.3s ease-in-out;
-    }
+.main-menu li a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6600, #ffcc00);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
+.main-menu li a:hover::after,
+.main-menu li.active a::after {
+    width: 100%;
+}
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+.main-menu li.active a {
+    color: #ff6600;
+    font-weight: bold;
+}
 
-    .notification-header {
-        background: #ff6347;
-        color: white;
-        padding: 12px;
-        font-weight: bold;
-        text-align: center;
-    }
+/* ===== Notification ===== */
+.notification-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 360px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    display: none;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-in-out;
+}
 
-    .notification-dropdown ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+.notification-dropdown.active {
+    display: block;
+}
 
-    .notification-dropdown li {
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+.notification-header {
+    background: linear-gradient(135deg, #ff6600, #ff6347);
+    color: #fff;
+    padding: 15px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+}
 
-    .notification-dropdown li:last-child {
-        border-bottom: none;
-    }
+.notification-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 350px;
+    overflow-y: auto;
+}
 
-    .notification-icon {
-        width: 30px;
-        height: 30px;
-        background: #ff6347;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 14px;
-    }
+.notification-dropdown li {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background 0.3s;
+}
 
-    .notification-text {
-        flex: 1;
-    }
+.notification-dropdown li:hover {
+    background: #fffaf5;
+}
 
-    .notification-dropdown.active {
-        display: block;
-    }
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    background: #ff6600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 16px;
+    flex-shrink: 0;
+}
 
-    .badge {
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-    }
+.notification-text {
+    flex: 1;
+    font-size: 14px;
+}
 
-    .badge-pending {
-        background-color: orange;
-        /* Chờ duyệt */
-    }
+.badge {
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+}
 
-    .badge-processing {
-        background-color: blue;
-        /* Đang chuẩn bị */
-    }
+.badge-pending { background-color: orange; }
+.badge-processing { background-color: #3498db; }
+.badge-shipped { background-color: purple; }
+.badge-completed { background-color: green; }
+.badge-canceled { background-color: red; }
 
-    .badge-shipped {
-        background-color: purple;
-        /* Đang giao */
-    }
+.notification-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite;
+}
 
-    .badge-completed {
-        background-color: green;
-        /* Giao thành công */
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
 
-    .badge-canceled {
-        background-color: red;
-        /* Đã hủy */
-    }
+@keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.8;}
+    50% { transform: scale(1.2); opacity: 1;}
+    100% { transform: scale(0.8); opacity: 0.8;}
+}
 
-    .notification-dot {
-        position: absolute;
-        top: 5px;
-        /* Điều chỉnh vị trí theo ý muốn */
-        right: 5px;
-        width: 10px;
-        height: 10px;
-        background-color: red;
-        border-radius: 50%;
-    }
+/* ===== Avatar dropdown ===== */
+.dropdown img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
 
-    .menu-desktop .main-menu li a {
-        color: #000;
-        /* chữ đen */
-        text-decoration: none;
-        font-weight: 500;
-        /* Viền trắng nổi bật */
-        text-shadow:
-            1px 1px 0 #fff,
-            -1px 1px 0 #fff,
-            1px -1px 0 #fff,
-            -1px -1px 0 #fff;
-        transition: color 0.3s ease;
-    }
+.dropdown img:hover {
+    transform: scale(1.1);
+}
 
-    .dropdown-menu {
-        min-width: 200px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-    }
+.dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
 
-    .dropdown-menu a {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 10px 20px;
+    transition: background 0.3s;
+}
+
+.dropdown-menu a:hover {
+    background: #fffaf5;
+}
 </style>
 <div>
     <header>
@@ -448,18 +462,18 @@
 
 
 <script>
-    document.getElementById("notification-icon").addEventListener("click", function(event) {
-        event.stopPropagation(); // Ngăn chặn sự kiện click lan ra ngoài
-        document.getElementById("notification-dropdown").classList.toggle("active");
-    });
+const notificationIcon = document.getElementById("notification-icon");
+const notificationDropdown = document.getElementById("notification-dropdown");
 
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("notification-dropdown");
-        var icon = document.getElementById("notification-icon");
+notificationIcon.addEventListener("click", function(event) {
+    event.stopPropagation();
+    notificationDropdown.classList.toggle("active");
+});
 
-        if (!icon.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.remove("active");
-        }
-    });
+document.addEventListener("click", function(event) {
+    if (!notificationIcon.contains(event.target) && !notificationDropdown.contains(event.target)) {
+        notificationDropdown.classList.remove("active");
+    }
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
