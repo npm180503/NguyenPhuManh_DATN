@@ -43,43 +43,43 @@ class ProductController extends Controller
     }
 
 
-public function detail(MenuService $menuService, int $productID)
-{
-    $menus = $menuService->getParent();
-    $sizes = Size::all();
-    $product = resolve(ProductService::class)->show($productID, ["menu"]);
-    $product->loadCount("reviews");
-    $product->load(["sizes", "reviews"]);
+    public function detail(MenuService $menuService, int $productID)
+    {
+        $menus = $menuService->getParent();
+        $sizes = Size::all();
+        $product = resolve(ProductService::class)->show($productID, ["menu"]);
+        $product->loadCount("reviews");
+        $product->load(["sizes", "reviews"]);
 
-    // Lấy danh mục con của sản phẩm
-    $category = Menu::find($product->menu_id);
+        // Lấy danh mục con của sản phẩm
+        $category = Menu::find($product->menu_id);
 
-    // Kiểm tra danh mục cha của nó
-    $parentCategory = $category ? Menu::find($category->parent_id) : null;
+        // Kiểm tra danh mục cha của nó
+        $parentCategory = $category ? Menu::find($category->parent_id) : null;
 
-    // Kiểm tra danh mục cha cấp cao nhất
-    $rootCategory = $parentCategory ? Menu::find($parentCategory->parent_id) : null;
+        // Kiểm tra danh mục cha cấp cao nhất
+        $rootCategory = $parentCategory ? Menu::find($parentCategory->parent_id) : null;
 
-    // 🔥 Lấy sản phẩm liên quan (cùng danh mục, khác ID hiện tại)
-    $relatedProducts = Product::where('menu_id', $product->menu_id)
-        ->where('id', '!=', $product->id)
-        ->take(4) // số sản phẩm liên quan hiển thị
-        ->get();
+        // 🔥 Lấy sản phẩm liên quan (cùng danh mục, khác ID hiện tại)
+        $relatedProducts = Product::where('menu_id', $product->menu_id)
+            ->where('id', '!=', $product->id)
+            ->take(4) // số sản phẩm liên quan hiển thị
+            ->get();
 
-    return view('frontend.product.productDetail', [
-        "id" => $productID,
-        'title' => 'Chi tiết sản phẩm',
-        'menus' => $menus,
-        "category" => $category,
-        "parentCategory" => $parentCategory,
-        "rootCategory" => $rootCategory,
-        "sizes" => $sizes,
-        "product" => $product,
-        "availableSizes" => $product->sizes->pluck("id")->toArray(),
-        "reviewCount" => (int) $product->reviews_count,
-        "relatedProducts" => $relatedProducts, // 👈 truyền sang view
-    ]);
-}
+        return view('frontend.product.productDetail', [
+            "id" => $productID,
+            'title' => 'Chi tiết sản phẩm',
+            'menus' => $menus,
+            "category" => $category,
+            "parentCategory" => $parentCategory,
+            "rootCategory" => $rootCategory,
+            "sizes" => $sizes,
+            "product" => $product,
+            "availableSizes" => $product->sizes->pluck("id")->toArray(),
+            "reviewCount" => (int) $product->reviews_count,
+            "relatedProducts" => $relatedProducts, // 👈 truyền sang view
+        ]);
+    }
 
 
     public function showDetailInPopup(int $productID)

@@ -199,7 +199,7 @@
                                         <tr>
                                             <td>{{ $item->product->name }}</td>
                                             <td>
-                                                <select name="sizes[{{ $item->id }}]" class="form-select">
+                                                <select name="sizes[{{ $item->id }}]" class="form-select" disabled>
                                                     @foreach ($item->product->sizes as $sizeOption)
                                                         <option value="{{ $sizeOption->id }}"
                                                             {{ $sizeOption->id == $item->size_id ? 'selected' : '' }}>
@@ -212,7 +212,7 @@
                                                 <input type="number" name="quantities[{{ $item->id }}]"
                                                     value="{{ $item->quantity }}" min="1"
                                                     class="form-control text-center quantity-input"
-                                                    data-price="{{ $item->price }}" data-item-id="{{ $item->id }}">
+                                                    data-price="{{ $item->price }}" data-item-id="{{ $item->id }}" disabled>
                                             </td>
                                             <td class="text-end">{{ number_format($item->price, 0, ',', '.') }}đ</td>
                                             <td class="text-end total-cell" id="total-{{ $item->id }}">

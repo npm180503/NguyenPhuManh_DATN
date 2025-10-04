@@ -436,12 +436,14 @@
                                 <div class="col-sm-10 col-md-8 col-lg-6 m-lr-auto">
                                     <div class="p-b-30 m-lr-15-sm">
                                         <!-- Review -->
+                                        @php
+                                            $user = auth('frontend')->user();
+                                        @endphp
                                         @if ($product->reviews && $product->reviews->count())
                                             @foreach ($product->reviews as $review)
                                                 <div class="flex-w flex-t p-b-68">
                                                     <div class="wrap-pic-s size-109 bor0 of-hidden m-r-18 m-t-6">
-                                                        <img src="{{ asset('template/images/download.png') }}"
-                                                            alt="AVATAR">
+                                                        <img src="{{ asset($user->thumb) }}" alt="AVATAR">
                                                     </div>
                                                     <div class="size-207">
                                                         <div class="flex-w flex-sb-m p-b-17">
@@ -604,7 +606,7 @@
         $('form').submit(function(e) {
             e.preventDefault();
 
-            var isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+            var isAuthenticated = {{ auth('frontend')->check() ? 'true' : 'false' }};
             if (!isAuthenticated) {
                 Swal.fire({
                     icon: 'warning',
@@ -650,7 +652,7 @@
         });
     </script>
 
-    <script src="{{ asset('js/public.js') }}"></script>
+    {{-- <script src="{{ asset('js/public.js') }}"></script> --}}
 
     <script src={{ asset('template/js/product.js?v=' . time()) }}></script>
 

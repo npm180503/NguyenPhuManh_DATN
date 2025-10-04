@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng nhập - PmouShop</title>
+    <title>Đăng nhập - PMSTORE</title>
 
     {{-- Tailwind 2.x --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
@@ -58,10 +58,10 @@
                         <div class="flex items-center gap-3">
                             <div
                                 class="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
-                                P
+                                <img src="/template/admin/dist/img/download.jpg" alt="">
                             </div>
                             <div>
-                                <h2 class="text-2xl font-bold text-gray-900">PmouShop</h2>
+                                <h2 class="text-2xl font-bold text-gray-900">PMSTORE</h2>
                                 <p class="text-gray-500">Sneakers & Streetwear</p>
                             </div>
                         </div>
