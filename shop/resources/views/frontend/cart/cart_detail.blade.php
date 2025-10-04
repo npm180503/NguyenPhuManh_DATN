@@ -238,7 +238,12 @@
                         input.val(newValue);
                     },
                     error: function(xhr) {
-                        console.log(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: xhr.responseJSON?.message ??
+                                'Không thể cập nhật số lượng sản phẩm.',
+                        });
                     },
                 }).always(function() {
                     processing = false;
@@ -271,8 +276,12 @@
                         input.val(newValue);
                     },
                     error: function(xhr) {
-                        console.log(oldValue);
-                        console.log(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: xhr.responseJSON?.message ??
+                                'Không thể cập nhật số lượng sản phẩm.',
+                        });
                     }
                 });
             });
